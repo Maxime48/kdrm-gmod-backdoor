@@ -1,0 +1,171 @@
+.stretch-card>.card {
+    width: 100%;
+    min-width: 100%
+}
+
+@media (max-width:991.98px) {
+    .padding {
+        padding: 1.5rem
+    }
+}
+
+@media (max-width:767.98px) {
+    .padding {
+        padding: 1rem
+    }
+}
+
+.padding {
+    padding: 3rem
+}
+
+.card {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    -ms-box-shadow: none
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid #3da5f;
+    border-radius: 0
+}
+
+.card .card-body {
+    padding: 1.25rem 1.75rem
+}
+
+.card .card-title {
+    color: #000000;
+    margin-bottom: 0.625rem;
+    text-transform: capitalize;
+    font-size: 0.875rem;
+    font-weight: 500
+}
+
+.card .card-description {
+    margin-bottom: .875rem;
+    font-weight: 400;
+    color: #76838f
+}
+
+.widget-user .widget-user-header {
+    padding: 20px;
+    height: 120px;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px
+}
+
+.bg-aqua-active {
+    background-color: #f0715f !important;
+    color: #fff
+}
+
+.widget-user .widget-user-username {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 20px;
+    font-weight: 300;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2)
+}
+
+.widget-user .widget-user-desc {
+    margin-top: 0;
+    font-size: 15px
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: 'Source Sans Pro', sans-serif
+}
+
+.box-widget {
+    border: none;
+    position: relative
+}
+
+.box {
+    position: relative;
+    border-radius: 3px;
+    background: #ffffff;
+    margin-bottom: 20px;
+    width: 100%;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1)
+}
+
+.widget-user .widget-user-image {
+    position: absolute;
+    top: 65px;
+    left: 50%;
+    margin-left: -45px
+}
+
+.widget-user .widget-user-image>img {
+    width: 90px;
+    height: auto;
+    border: 3px solid #fff
+}
+
+.img-circle {
+    border-radius: 50%
+}
+
+.widget-user .box-footer {
+    padding-top: 30px
+}
+
+.box-footer {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top: 1px solid #f4f4f4;
+    padding: 10px;
+    background-color: #fff
+}
+
+.box .border-right {
+    border-right: 1px solid #f4f4f4
+}
+
+.description-block {
+    display: block;
+    margin: 10px 0;
+    text-align: center
+}
+
+.description-block>.description-header {
+    margin: 0;
+    padding: 0;
+    font-size: 15px
+}
+
+.description-block>.description-text {
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+    text-transform: uppercase
+}
+
+.description-block {
+    display: block;
+    margin: 10px 0;
+    text-align: center
+}
