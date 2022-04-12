@@ -5,7 +5,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('ScreenGrabber Selection Menu') }}
+            {{ __($type . ' Screen Grab') }}
         </h2>
     </x-slot>
 
@@ -28,42 +28,42 @@
 
 
                     <div class="container-fluid mt-100">
-                        <div class="card-group mx-8">
-
-                            <div class="card rounded">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        Fast Screen Grab 🏎️
-                                    </h5>
-                                    <p class="card-text">
-                                        Takes a screenshot of the player's screen using the selected name, uses the first player detected in case of duplicates. <br>
-                                    </p>
-                                </div>
-                                <ul class="list-group">
-                                    <li class="list-group-item list-group-item-success"><i class="fa fa-clock-o"style="font-size:20px;"></i>   20-40 seconds</li>
-                                </ul>
-                                <div class="card-body mx-auto">
-                                    <button type="button" class="btn btn-primary">☢ ️Launch ☢️</button>
-                                </div>
-                            </div>
-                            <div class="card rounded">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        Precise Screen Grab🎯
-                                    </h5>
-                                    <i class="fa-solid fa-arrows-to-dot"></i>
-                                    <p class="card-text">
-                                        Takes a screenshot of the player's screen using the selected steamid. <br><br>
-                                    </p>
-                                </div>
-                                <ul class="list-group">
-                                    <li class="list-group-item list-group-item-success"><i class="fa fa-clock-o"style="font-size:20px;"></i>   40-60 seconds</li>
-                                </ul>
-                                <div class="card-body mx-auto">
-                                    <button type="button" class="btn btn-primary">☢ ️Launch ☢️</button>
-                                </div>
-                            </div>
-                        </div>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center;">Players:
+                                    <span class="label label-info">
+                                            {{ count( $Players ) }}
+                                    </span>
+                                </th>
+                                <th style="text-align: center;">Launch</th>
+                                <th class="frags-column">Frags</th>
+                                <th class="frags-column">Time</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if( !empty( $Players ) )
+                                @foreach( $Players as $Player )
+                                    @if($Player[ 'Name' ] != "")
+                                        <tr>
+                                            <td>{{ htmlspecialchars( $Player[ 'Name' ] ) }}</td>
+                                            <td style="text-align: center;">
+                                                <a href="{{ route('sendFastSCRGBPayload', ['serverid' => $server->id]) }}"  class="btn btn-primary">
+                                                    ☢ ️Launch ☢
+                                                </a>
+                                            </td>
+                                            <td>{{ $Player[ 'Frags' ] }}</td>
+                                            <td>{{ $Player[ 'TimeF' ] }}</td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="3">No players received</td>
+                                </tr>
+                            @endif
+                            </tbody>
+                        </table>
                     </div>
 
                 </div>

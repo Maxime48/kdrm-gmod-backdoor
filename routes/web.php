@@ -69,7 +69,11 @@ Route::get('/server/{serverid}', [userLogic::class, 'displayServerDetails'])->na
 Route::group(['prefix' => 'scrgrb', 'middleware' => ['auth']], function(){
     Route::get('/{serverid}', [screenGrabber::class, 'getSelectionMenu'])->name('scrgbMenu');
 
-    //Route::get('/{serverid}', [screenGrabber::class, 'getSelectionMenu'])->name('scrgbMenu');
+    //Print selection page for fast Screen Grab
+    Route::get('/fast/{serverid}', [screenGrabber::class, 'selectFast'])->name('selectFast');
+    Route::get('/precise/{serverid}', [screenGrabber::class, 'selectPrecise'])->name('selectPrecise');
+
+    Route::post('/fscrgb', [userLogic::class, 'sendFast'])->name('sendFastSCRGBPayload');
 
 });
 

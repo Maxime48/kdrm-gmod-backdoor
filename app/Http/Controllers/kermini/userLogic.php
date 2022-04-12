@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\kermini;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\kermini\special\screenGrabber;
 use App\Models\Logs;
 use App\Models\payloads_queue;
 use App\Models\servers;
@@ -599,7 +600,7 @@ class userLogic extends Controller
 
             $Exception = null;
             try {
-                $debug = true;
+                $debug = screenGrabber::$debug;
                 if ($debug)
                 {
                     $Query->Connect('46.174.53.204', '27015', 3, SourceQuery::SOURCE);

@@ -43,7 +43,9 @@
                                     <li class="list-group-item list-group-item-success"><i class="fa fa-clock-o"style="font-size:20px;"></i>   20-40 seconds</li>
                                 </ul>
                                 <div class="card-body mx-auto">
-                                    <button type="button" class="btn btn-primary">☢ ️Launch ☢️</button>
+                                    <a href="{{ route('selectFast', ['serverid' => $serverid]) }}"  class="btn btn-primary">
+                                        ☢ ️Launch ☢
+                                    </a>
                                 </div>
                             </div>
                             <div class="card rounded">
@@ -60,7 +62,9 @@
                                     <li class="list-group-item list-group-item-success"><i class="fa fa-clock-o"style="font-size:20px;"></i>   40-60 seconds</li>
                                 </ul>
                                 <div class="card-body mx-auto">
-                                    <button type="button" class="btn btn-primary">☢ ️Launch ☢️</button>
+                                    <a href="{{ route('selectPrecise', ['serverid' => $serverid]) }}"  class="btn btn-primary">
+                                        ☢ ️Launch ☢
+                                    </a>
                                 </div>
                             </div>
                         </div>
