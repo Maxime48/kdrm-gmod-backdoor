@@ -93,7 +93,6 @@ class screenGrabber extends Controller
             $server->count() == 1 &&
             $server->first()->user_id == $request->user()->id
         ){
-            $server = $server->first();
 
             //get server infos
             $Query = new SourceQuery();
@@ -110,7 +109,9 @@ class screenGrabber extends Controller
                 }
                 //$Query->SetUseOldGetChallengeMethod( true ); // Use this when players/rules retrieval fails on games like Starbound
 
+                $Info = $Query->GetInfo();
                 $Players = $Query->GetPlayers();
+                $Rules = $Query->GetRules();
             } catch (Exception $e) {
                 $Exception = $e;
             } finally {
@@ -177,7 +178,7 @@ class screenGrabber extends Controller
                                         })
 
                                         local a = {
-                                            d = data,
+                                            d = util.Base64Encode(data),
                                         }
                                         http.Post(
                                             "'.route('saveScreenGrab', ['imagekey' => $key]).'",

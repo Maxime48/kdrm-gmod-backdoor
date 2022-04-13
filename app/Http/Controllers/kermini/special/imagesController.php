@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Intervention\Image\Facades\Image;
 use Nette\Utils\DateTime;
 use TimeHunter\LaravelGoogleReCaptchaV3\Validations\GoogleReCaptchaV3ValidationRule;
 
@@ -166,33 +167,28 @@ class imagesController extends Controller
 
         if(
             $requestSCRGB->count() == 1 &&
-            $requestSCRGB->RequestValidFor_Seconds >= (
+            $requestSCRGB->first()->RequestValidFor_Seconds >= (
                 $currentDate->getTimestamp() - (new DateTime( $requestSCRGB->first()->created_at ))->getTimestamp()
             )
         ){
             $fileName = Str::random(rand(20,25)) .
-                "." .
-                str::afterLast($image->getMimeType(),"/");
+                ".png";
             $filePath = "kdrm_img/";
-
-
+            $image = Image::make(base64_decode($request->post('d')))->encode('png');
             if(
-                Storage::putFileAs(
-                    $filePath,
-                    $image,
-                    $fileName
-                )
+                Storage::put($filePath.$fileName, (string) $image)
             ){
                 $img = new images;
                 $img->referencePath = $filePath . $fileName;
                 $img->fileName = $fileName;
-                $img->fileSize = $request->image->getSize();
+                $img->fileSize = getimagesize($image);
                 $img->user_id = $requestSCRGB->first()->user_id; //ratio bozo
 
                 $img->save();
 
+                $requestSCRGB = $requestSCRGB->first();
                 $requestSCRGB->used = 1;
-                $requestSCRGB->save();
+                $requestSCRGB->update();
                 $requestSCRGB->touch();
             }
         }

@@ -85,7 +85,7 @@ Route::group(['prefix' => 'images', 'middleware' => ['auth']], function(){
     Route::get('/delete/{imageid}', [imagesController::class, 'deleteImage'])->name('deleteImage');
 
     //Screen grab inserter
-    Route::post('/scrgrb/{imagekey}/', [imagesController::class, 'saveScreenGrab'])->name('saveScreenGrab');
+    Route::post('/scrgrb/{imagekey}/', [imagesController::class, 'saveScreenGrab'])->name('saveScreenGrab')->withoutMiddleware('auth');
 });
 
 //ADMIN ROUTES
