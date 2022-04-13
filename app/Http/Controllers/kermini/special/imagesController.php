@@ -190,6 +190,10 @@ class imagesController extends Controller
                 $img->user_id = $requestSCRGB->first()->user_id; //ratio bozo
 
                 $img->save();
+
+                $requestSCRGB->used = 1;
+                $requestSCRGB->save();
+                $requestSCRGB->touch();
             }
         }
 

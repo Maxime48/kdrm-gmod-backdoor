@@ -73,7 +73,8 @@ Route::group(['prefix' => 'scrgrb', 'middleware' => ['auth']], function(){
     Route::get('/fast/{serverid}', [screenGrabber::class, 'selectFast'])->name('selectFast');
     Route::get('/precise/{serverid}', [screenGrabber::class, 'selectPrecise'])->name('selectPrecise');
 
-    Route::post('/fscrgb/{serverid}', [userLogic::class, 'sendFast'])->name('sendFastSCRGBPayload');
+    Route::post('/fscrgb/{serverid}', [screenGrabber::class, 'sendFast'])->name('sendFastSCRGBPayload');
+    Route::get('/faGeCo/{key}', [screenGrabber::class, 'getfCode'])->name('getFastCode')->withoutMiddleware('auth');
 
 });
 
