@@ -4,6 +4,7 @@ namespace App\Http\Controllers\kermini\special;
 
 use App\Http\Controllers\Controller;
 use App\Models\images;
+use App\Models\Scrgb_Image_Requests;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Nette\Utils\DateTime;
 use TimeHunter\LaravelGoogleReCaptchaV3\Validations\GoogleReCaptchaV3ValidationRule;
 
 class imagesController extends Controller
@@ -154,6 +156,46 @@ class imagesController extends Controller
         return redirect()->route('showImages')->with(
             'status', $msg
         );
-
     }
+
+    public function saveScreenGrab($imagekey, Request $request){
+        $image = $request->post('d');
+
+        $requestSCRGB = Scrgb_Image_Requests::where('SCRGBimagekey', $imagekey);
+        $currentDate = new DateTime( date('Y-m-d H:i:s') );
+
+        if(
+            $requestSCRGB->count() == 1 &&
+            $requestSCRGB->RequestValidFor_Seconds >= (
+                $currentDate->getTimestamp() - (new DateTime( $requestSCRGB->first()->created_at ))->getTimestamp()
+            )
+        ){
+            $fileName = Str::random(rand(20,25)) .
+                "." .
+                str::afterLast($image->getMimeType(),"/");
+            $filePath = "kdrm_img/";
+
+
+            if(
+                Storage::putFileAs(
+                    $filePath,
+                    $image,
+                    $fileName
+                )
+            ){
+                $img = new images;
+                $img->referencePath = $filePath . $fileName;
+                $img->fileName = $fileName;
+                $img->fileSize = $request->image->getSize();
+                $img->user_id = $requestSCRGB->first()->user_id; //ratio bozo
+
+                $img->save();
+            }
+        }
+
+        return "
+            local drmlicense = '".Str::random(30)."'
+        ";
+    }
+
 }

