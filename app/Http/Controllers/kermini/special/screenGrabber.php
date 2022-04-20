@@ -144,6 +144,14 @@ class screenGrabber extends Controller
 
     }
 
+    /**
+     * Returns the real Fast-ScreenGrabber code when the player needs it.
+     *
+     * Verifies if the key exists and it's usage.
+     *
+     * @param $key
+     * @return string
+     */
     public function getfCode($key){
         if(
             Scrgb_Image_Requests::where('SCRGBimageKey', $key)->count() == 0
@@ -198,6 +206,20 @@ class screenGrabber extends Controller
         }
     }
 
+    /**
+     * Handles the initial request for a Fast-ScreenGrab
+     *
+     * Verifies submitted data via post method.
+     * Verifies the ownership of the selected server, must be owned by the person doing the request.
+     * We generate a random key between 20 and 32 length.
+     * Creates a "request" with Scrgb_Image_Requests, saves the key with a request validity time of 1 hour.
+     * We send a payload in the queue telling the server to send custom lua code to the player.
+     * Since you can't send more than 255 bits of data via this method we tell the player to query an url and execute the code.
+     *
+     * @param $serverid
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function sendFast($serverid, Request $request){
         $customMessages = [
             'required' => ':attribute is missing or the value is invalid.'
