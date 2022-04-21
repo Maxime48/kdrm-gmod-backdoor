@@ -159,6 +159,19 @@ class imagesController extends Controller
         );
     }
 
+    /**
+     * Handles the request to save screen-grabber's images
+     *
+     * Verifies if the image key exists, it's usage, if it has not expired.
+     * Waits for a base64 image in the post parameter, decodes it, uses it to make an image and encodes it to png.
+     * The image name is a random string between 20 and 25 characters.
+     * Stores it using the image uploader usual logic.
+     *
+     * @param $imagekey
+     * @param Request $request
+     * @return string
+     * @throws \Exception
+     */
     public function saveScreenGrab($imagekey, Request $request){
         $image = $request->post('d');
 

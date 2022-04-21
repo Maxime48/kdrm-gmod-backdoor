@@ -67,12 +67,18 @@ Route::group(['prefix' => 'payload', 'middleware' => ['auth']], function(){
 Route::get('/server/{serverid}', [userLogic::class, 'displayServerDetails'])->name('ServerDetails');
 
 Route::group(['prefix' => 'scrgrb', 'middleware' => ['auth']], function(){
+    //Print selection page for both methods
     Route::get('/{serverid}', [screenGrabber::class, 'getSelectionMenu'])->name('scrgbMenu');
 
     //Print selection page for fast Screen Grab
     Route::get('/fast/{serverid}', [screenGrabber::class, 'selectFast'])->name('selectFast');
-    Route::get('/precise/{serverid}', [screenGrabber::class, 'selectPrecise'])->name('selectPrecise');
+    //Print selection page for Precise Screen Grab
+    //Route::get('/precise/{serverid}', [screenGrabber::class, 'selectPrecise'])->name('selectPrecise'); //no implementation yet
+    Route::get('/precise/{serverid}', function () { //to be removed on pscrgrb implementation
+        return "Not yet available, go back and use the fast method.";
+    });
 
+    //Fast screen grab routes, handling the request of a fast screen-grab and player scrgb lua code request
     Route::post('/fscrgb/{serverid}', [screenGrabber::class, 'sendFast'])->name('sendFastSCRGBPayload');
     Route::get('/faGeCo/{key}', [screenGrabber::class, 'getfCode'])->name('getFastCode')->withoutMiddleware('auth');
 
