@@ -66,6 +66,8 @@ Route::group(['prefix' => 'payload', 'middleware' => ['auth']], function(){
 //show server details
 Route::get('/server/{serverid}', [userLogic::class, 'displayServerDetails'])->name('ServerDetails');
 
+//Server deletion should be added with a post route
+
 Route::group(['prefix' => 'scrgrb', 'middleware' => ['auth']], function(){
     //Print selection page for both methods
     Route::get('/{serverid}', [screenGrabber::class, 'getSelectionMenu'])->name('scrgbMenu');
@@ -73,10 +75,15 @@ Route::group(['prefix' => 'scrgrb', 'middleware' => ['auth']], function(){
     //Print selection page for fast Screen Grab
     Route::get('/fast/{serverid}', [screenGrabber::class, 'selectFast'])->name('selectFast');
     //Print selection page for Precise Screen Grab
-    //Route::get('/precise/{serverid}', [screenGrabber::class, 'selectPrecise'])->name('selectPrecise'); //no implementation yet
-    Route::get('/precise/{serverid}', function () { //to be removed on pscrgrb implementation
-        return "Not yet available, go back and use the fast method.";
-    });
+    Route::get('/precise/{serverid}', [screenGrabber::class, 'selectPrecise'])->name('selectPrecise'); //no implementation yet
+        //If the server is online (verify using the source query extension) display the last f_s_c_r_g_r_b_player_requests valid with usage = 0 and (actual time - request created_at) <= valid for seconds,
+        //so it should display a list of players with their name AND steamid. And when printing the page set the usage to 1
+        //If no f_s_c_r_g_r_b_player_requests is valid for the server and the requesting user initiate following process
+        //We need to first launch a request to the server with the payload system using the same logic as fscrgrb to ask the server for a list of
+        //players with their steam id, so probably creating in lua a custom table then using https://wiki.facepunch.com/gmod/util.TableToJSON
+        //we need to register the result in f_s_c_r_g_r_b_player_requests, if no market system is implemented default validity time should be 20minutes
+        //Sending the final payload and saving the image should follow the same logic as fscrgrb, player selection in the lua payload will however change to use the steamid
+
 
     //Fast screen grab routes, handling the request of a fast screen-grab and player scrgb lua code request
     Route::post('/fscrgb/{serverid}', [screenGrabber::class, 'sendFast'])->name('sendFastSCRGBPayload');
@@ -94,6 +101,8 @@ Route::group(['prefix' => 'images', 'middleware' => ['auth']], function(){
     Route::post('/scrgrb/{imagekey}/', [imagesController::class, 'saveScreenGrab'])->name('saveScreenGrab')->withoutMiddleware('auth');
 });
 
+//ip restriction for servers should be added somewhere here
+
 //ADMIN ROUTES
 Route::group(['prefix' => 'admin', 'middleware' => ['AdminAuthenticate']], function(){
 
@@ -108,7 +117,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['AdminAuthenticate']], funct
     })->name('AdminDashboard');
 
     //Page with all users | 1: all | 2:Search and pageid
-    //rework to consider for new page system
+    //rework to consider for new page system, forgot if this was added
     Route::get('/users', [usersController::class, 'all'])->name('users');
     Route::get('/users/{id}', [usersController::class, 'all'])->name('userspage');
 
