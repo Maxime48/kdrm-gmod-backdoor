@@ -281,4 +281,73 @@ class screenGrabber extends Controller
 
     }
 
+
+    public function selectPrecise($serverid, Request $request){
+        //verify data consistency
+        if(
+            $serverid!=null
+            and !is_numeric($serverid)
+        ){
+            $user = $request->user();
+            $user->admin = -1;
+            $user->save();
+            return redirect()->back()->with(
+                'status', "You got banned, don't play with that 😳"
+            );
+        }
+
+        $server = servers::where('id', $serverid);
+        //verify ownership of server and existence
+        if(
+            $server->count() == 1 &&
+            $server->first()->user_id == $request->user()->id
+        ){
+
+            //get server infos
+            $Query = new SourceQuery();
+            $server = $server->first();
+
+            $Exception = null;
+            try {
+                $debug = self::$debug;
+                if ($debug)
+                {
+                    $Query->Connect('46.174.53.204', '27015', 3, SourceQuery::SOURCE);
+                }else {
+                    $Query->Connect($server->ip, $server->port, 3, SourceQuery::SOURCE);
+                }
+                //$Query->SetUseOldGetChallengeMethod( true ); // Use this when players/rules retrieval fails on games like Starbound
+
+                $Info = $Query->GetInfo();
+                $Players = $Query->GetPlayers();
+                $Rules = $Query->GetRules();
+            } catch (Exception $e) {
+                $Exception = $e;
+            } finally {
+                $Query->Disconnect();
+            }
+
+            if ($Exception == null){
+                //server is online and reachable
+                //we need to verify the existence of a valid player request.
+                    //A user could stack multiple requests in theory if they are not limited.
+                    // "limiting" a user is yet to be defined
+
+
+            }else{
+                //Don't allow access if server is not accessible
+                return redirect()->back()->with(
+                    'status', "Server not reachable"
+                );
+            }
+
+
+        }
+        else{
+            return redirect()->back()->with(
+                'status', "It's not your server :("
+            );
+        }
+    }
+
 }
