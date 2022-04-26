@@ -173,8 +173,6 @@ class imagesController extends Controller
      * @throws \Exception
      */
     public function saveScreenGrab($imagekey, Request $request){
-        $image = $request->post('d');
-
         $requestSCRGB = Scrgb_Image_Requests::where('SCRGBimagekey', $imagekey);
         $currentDate = new DateTime( date('Y-m-d H:i:s') );
 

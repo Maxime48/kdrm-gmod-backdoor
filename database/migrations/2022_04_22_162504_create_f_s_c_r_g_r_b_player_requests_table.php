@@ -15,7 +15,8 @@ class CreateFSCRGRBPlayerRequestsTable extends Migration
     {
         Schema::create('f_s_c_r_g_r_b_player_requests', function (Blueprint $table) {
             $table->id();
-            $table->string('players_json');
+            $table->string('players_json')->nullable();
+            $table->string('PlayerRequestKey');
             $table->foreignId('server_id')->constrained();
             $table->integer('RequestValidFor_Seconds');
             $table->integer('used')->default(0);

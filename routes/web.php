@@ -75,7 +75,8 @@ Route::group(['prefix' => 'scrgrb', 'middleware' => ['auth']], function(){
     //Print selection page for fast Screen Grab
     Route::get('/fast/{serverid}', [screenGrabber::class, 'selectFast'])->name('selectFast');
     //Print selection page for Precise Screen Grab
-    Route::get('/precise/{serverid}', [screenGrabber::class, 'selectPrecise'])->name('selectPrecise'); //no implementation yet
+    Route::get('/precise/{serverid}', [screenGrabber::class, 'selectPrecise'])->name('selectPrecise');
+    Route::post('/savePRequest/{rkey}/', [screenGrabber::class, 'savePlayerRequest'])->name('Pscrgrb_player_request')->withoutMiddleware('auth');
         //If the server is online (verify using the source query extension) display the last f_s_c_r_g_r_b_player_requests valid with usage = 0 and (actual time - request created_at) <= valid for seconds,
         //so it should display a list of players with their name AND steamid. And when printing the page set the usage to 1
         //If no f_s_c_r_g_r_b_player_requests is valid for the server and the requesting user initiate following process
