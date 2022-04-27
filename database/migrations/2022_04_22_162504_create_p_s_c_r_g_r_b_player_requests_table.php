@@ -13,7 +13,7 @@ class CreateFSCRGRBPlayerRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::create('f_s_c_r_g_r_b_player_requests', function (Blueprint $table) {
+        Schema::create('p_s_c_r_g_r_b_player_requests', function (Blueprint $table) {
             $table->id();
             $table->string('players_json')->nullable();
             $table->string('PlayerRequestKey');

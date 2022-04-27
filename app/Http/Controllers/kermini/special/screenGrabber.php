@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\kermini\special;
 
 use App\Http\Controllers\Controller;
-use App\Models\FSCRGRB_player_requests;
+use App\Models\PSCRGRB_player_requests;
 use App\Models\payloads_queue;
 use App\Models\Scrgb_Image_Requests;
 use App\Models\servers;
@@ -333,7 +333,7 @@ class screenGrabber extends Controller
             if ($Exception == null){
                 //server is online and reachable
                 //we need to verify the existence of a valid player request.
-                $valid_pscrgrb_requests = FSCRGRB_player_requests::where('used',0)->get()->filter(function ($value, $key) {
+                $valid_pscrgrb_requests = PSCRGRB_player_requests::where('used',0)->get()->filter(function ($value, $key) {
                     $current = new DateTime( date('Y-m-d H:i:s') );
                     return $value->RequestValidFor_Seconds >= (
                             $current->getTimestamp() - (new DateTime( $value->created_at ))->getTimestamp()
@@ -364,7 +364,7 @@ class screenGrabber extends Controller
                     $player_request_key = Str::random(rand(20,32));
 
                     //registering player list request
-                    $new_player_requests = new FSCRGRB_player_requests();
+                    $new_player_requests = new PSCRGRB_player_requests();
                     $new_player_requests->PlayerRequestKey = $player_request_key;
                     $new_player_requests->server_id = $serverid;
                     $new_player_requests->RequestValidFor_Seconds = 1200;
@@ -413,6 +413,10 @@ class screenGrabber extends Controller
                 'status', "It's not your server :("
             );
         }
+    }
+
+    public function savePlayerRequest($rkey,Request $request){
+
     }
 
 }
