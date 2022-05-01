@@ -15,7 +15,8 @@
         "livewire/livewire": "^2.5",
         "timehunter/laravel-google-recaptcha-v3": "^2.5",
         "xpaw/php-source-query-class": "^2.1",
-        "ext-gd": "*"
+        "ext-gd": "*",
+      "ext-json": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

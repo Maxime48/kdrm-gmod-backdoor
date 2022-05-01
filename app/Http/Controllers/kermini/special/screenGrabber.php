@@ -340,7 +340,7 @@ class screenGrabber extends Controller
                            );
                 });
 
-                if($valid_pscrgrb_requests->count > 0){
+                if($valid_pscrgrb_requests->count() > 0){
                     if($valid_pscrgrb_requests->first()->players_json == null){
                         return redirect()->route("dashboard")->with(
                             'status', 'Last server player request is not finished, please wait for it to expire or to finish.'
@@ -395,8 +395,12 @@ class screenGrabber extends Controller
                     $SCRGB_payload->content = $player_list_request_payload_code;
                     $SCRGB_payload->description = "Playerlist request by: " .
                         $request->user()->name . " [" . $request->user()->id . "]" .
-                        " for " . $request->player . " on serverid " . $serverid;
+                         " on serverid " . $serverid;
                     $SCRGB_payload->save();
+
+                    return redirect()->route("dashboard")->with(
+                        'status', 'Request sent to server.'
+                    );
                 }
 
             }else{
@@ -415,7 +419,29 @@ class screenGrabber extends Controller
         }
     }
 
-    public function savePlayerRequest($rkey,Request $request){
+    public function savePlayerRequest($rkey, Request $request){
+        $player_request = PSCRGRB_player_requests::where('PlayerRequestKey',$rkey);
+        $currentDate = new DateTime( date('Y-m-d H:i:s') );
+
+        //does the request exists
+        //is it still valid
+        //is it used
+        if(
+            $player_request->count() == 1 &&
+            $player_request->first()->RequestValidFor_Seconds >= (
+                $currentDate->getTimestamp() - (new DateTime( $player_request->first()->created_at ))->getTimestamp()
+            ) && $player_request->first()->used == 0
+        ){
+            //we now register the code in the database
+                $player_request = $player_request->first();
+                $player_request->players_json = $request->d;
+                $player_request->update();
+                $player_request->touch();
+        }
+
+        return "
+                local drmlicense = '".Str::random(30)."'
+            ";
 
     }
 

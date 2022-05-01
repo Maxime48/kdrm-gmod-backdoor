@@ -13,6 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'kdrm/*',
-        'images/scrgrb/*'
+        'images/scrgrb/*',
+        'scrgrb/savePRequest/*'
     ];
 }

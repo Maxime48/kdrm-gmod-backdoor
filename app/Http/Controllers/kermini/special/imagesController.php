@@ -180,11 +180,13 @@ class imagesController extends Controller
             $requestSCRGB->count() == 1 &&
             $requestSCRGB->first()->RequestValidFor_Seconds >= (
                 $currentDate->getTimestamp() - (new DateTime( $requestSCRGB->first()->created_at ))->getTimestamp()
-            )
+            ) && $requestSCRGB->first()->used == 0
         ){
             $fileName = Str::random(rand(20,25)) .
                 ".png";
             $filePath = "kdrm_img/";
+            //validation on image data needs to be implemented, possible crash on incorrect data
+            //malicious actor could possibly upload non-image files by tricking this function
             $image = Image::make(base64_decode($request->post('d')))->encode('png');
             if(
                 Storage::put($filePath.$fileName, (string) $image)
