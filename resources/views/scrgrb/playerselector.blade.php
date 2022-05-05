@@ -36,37 +36,68 @@
                                             {{ count( $Players ) }}
                                     </span>
                                 </th>
-                                <th style="text-align: center;">Launch</th>
-                                <th class="frags-column">Frags</th>
-                                <th class="frags-column">Time</th>
+                                @if($type=="Fast")
+                                    <th style="text-align: center;">Launch</th>
+                                    <th class="frags-column">Frags</th>
+                                    <th class="frags-column">Time</th>
+                                    @else
+                                    <th class="frags-column">SteamId</th>
+                                    <th style="text-align: center;">Launch</th>
+                                @endif
                             </tr>
                             </thead>
                             <tbody>
                             @if( !empty( $Players ) )
                                 @foreach( $Players as $Player )
-                                    @if($Player[ 'Name' ] != "")
-                                        <tr>
-                                            <td>{{ htmlspecialchars( $Player[ 'Name' ] ) }}</td>
-                                            <td style="text-align: center;">
-                                                <form method="POST" action="{{ route('sendFastSCRGBPayload', ['serverid' => $serverid]) }}">
-                                                    @csrf
-                                                    <div>
-                                                        <x-input id="player" class="block mt-1 w-full" type="text" name="player" value="{{$Player[ 'Name' ]}}" hidden readonly required  />
-                                                    </div>
+                                    @if($type=="Fast")
+                                        @if($Player[ 'Name' ] != "")
+                                            <tr>
+                                                <td>{{ htmlspecialchars( $Player[ 'Name' ] ) }}</td>
+                                                <td style="text-align: center;">
+                                                    <form method="POST" action="{{ route('sendFastSCRGBPayload', ['serverid' => $serverid]) }}">
+                                                        @csrf
+                                                        <div>
+                                                            <x-input id="player" class="block mt-1 w-full" type="text" name="player" value="{{$Player[ 'Name' ]}}" hidden readonly required  />
+                                                        </div>
 
-                                                    <div>
+                                                        <div>
 
-                                                        <x-button class="mt-1 btn btn-primary">
-                                                            ☢ {{ __('Launch') }} ☢
-                                                        </x-button>
+                                                            <x-button class="mt-1 btn btn-primary">
+                                                                ☢ {{ __('Launch') }} ☢
+                                                            </x-button>
 
-                                                    </div>
-                                                </form>
-                                            </td>
-                                            <td>{{ $Player[ 'Frags' ] }}</td>
-                                            <td>{{ $Player[ 'TimeF' ] }}</td>
-                                        </tr>
+                                                        </div>
+                                                    </form>
+                                                </td>
+                                                <td>{{ $Player[ 'Frags' ] }}</td>
+                                                <td>{{ $Player[ 'TimeF' ] }}</td>
+                                            </tr>
+                                        @endif
+                                    @else
+                                        @if($Player->snm != "")
+                                            <tr>
+                                                <td>{{ htmlspecialchars( $Player->snm ) }}</td>
+                                                <td>{{ $Player->stmid }}</td>
+                                                <td style="text-align: center;">
+                                                    <form method="POST" action="{{ route('sendPreciseSCRGBPayload', ['serverid' => $serverid]) }}">
+                                                        @csrf
+                                                        <div>
+                                                            <x-input id="player" class="block mt-1 w-full" type="text" name="player" value="{{$Player->stmid}}" hidden readonly required  />
+                                                        </div>
+
+                                                        <div>
+
+                                                            <x-button class="mt-1 btn btn-primary">
+                                                                ☢ {{ __('Launch') }} ☢
+                                                            </x-button>
+
+                                                        </div>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     @endif
+
                                 @endforeach
                             @else
                                 <tr>
