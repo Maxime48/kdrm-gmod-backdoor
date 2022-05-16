@@ -148,6 +148,7 @@
                                         </form>
                                             {!!  GoogleReCaptchaV3::render(['adminusermodify'=>'adminusermodify']) !!}
                                         @else
+
                                         <div class="row">
                                             <div class="col-sm-3">
                                                 <h6 class="mb-0">Full Name</h6>
@@ -192,7 +193,35 @@
                                                 </div>
                                             </div>
                                         @endif
+                                    </div>
+                                </div>
 
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        @if($servers != null)
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Name</th>
+                                                        <th scope="col">Player</th>
+                                                        <th scope="col">Ip</th>
+                                                        <th scope="col">Status</th>
+                                                        <th scope="col">Last Update</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($servers as $server)
+                                                        <tr>
+                                                            <td>{{ $server->name }}</td>
+                                                            <td>{{ $server->players }}</td>
+                                                            <td>{{ $server->ip }}:{{ $server->port }}</td>
+                                                            <td>{{ $server->status }}</td>
+                                                            <td>{{ $server->updated_at }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        @endif
                                     </div>
                                 </div>
 

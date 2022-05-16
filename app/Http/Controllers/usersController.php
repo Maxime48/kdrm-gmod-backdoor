@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\servers;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -59,6 +60,12 @@ class usersController extends Controller
 
         $user = User::findOrFail($id);
         $mode = false;
-        return view('admin.adminuserprofile', compact('user', 'mode'));
+
+        $servers = servers::where('user_id', $id)->get();
+
+        return view('admin.adminuserprofile', compact('user',
+            'mode',
+        'servers'
+        ));
     }
 }
