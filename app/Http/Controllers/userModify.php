@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\servers;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -109,6 +110,7 @@ class userModify extends Controller
     {
         $user = User::findOrFail($id);
         $mode = true;
-        return view('admin.adminuserprofile', compact('user', 'mode'));
+        $servers = servers::where('user_id', $id)->get();
+        return view('admin.adminuserprofile', compact('user', 'mode', 'servers'));
     }
 }
