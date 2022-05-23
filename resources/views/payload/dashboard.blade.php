@@ -22,131 +22,105 @@
                 </div>
             </div>
         @endif
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="overflow-hidden">
+                    <div class="p-6">
 
                     <div class="container-fluid mt-100">
 
 
                         <div class="d-flex flex-wrap justify-content-between">
                             <!--<div class="col-12 col-md-3 p-0 mb-3"> <input type="text" class="form-control" placeholder="Search..."> </div>-->
-                            <a href="{{ route('addNewPayload') }}"  class="btn btn-primary">New Payload</a>
+                            <a href="{{ route('addNewPayload') }}"  class="btn btn-primary mb-2">New Payload</a>
                         </div>
 
-                        <div class="card mb-3">
-                            <div class="card-header pl-0 pr-0">
-                                <div class="row no-gutters w-110 align-items-center">
-                                    <div class="col-12 text-muted">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col-1">#</div>
-                                            <div class="col-2">Description</div>
-                                            <div class="col-2">Content</div>
-                                            <div class="col-2">Created at</div>
-                                            <div class="col-2">Updated at</div>
-                                            <div class="col-3">Launch</div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="table100 ver1 m-b-110">
+                            <div class="table100-head">
+                                <table>
+                                    <thead>
+                                    <tr class="row100 head">
+                                        <th class="cell100 column3"></th>
+                                        <th class="cell100 column2">Description</th>
+                                        <th class="cell100 column3">Content</th>
+                                        <th class="cell100 column2">Created at</th>
+                                        <th class="cell100 column5">Updated at</th>
+                                        <th class="cell100 column6">Launch</th>
+                                    </tr>
+                                    </thead>
+                                </table>
                             </div>
+                            <div class="table100-body js-pscroll">
+                                <table>
+                                    <tbody>
+                                    @foreach($payloads as $payload)
+                                        <tr class="row100 body">
+                                            <td class="cell100 column3">
+                                                <a href="{{ route('editPayload', ['payloadid' => $payload->id]) }}"  class="btn btn-secondary ml-12">Edit</a>
+                                                <a href="{{ route('deletePayload', ['payloadid' => $payload->id]) }}"  class="btn btn-danger">
+                                                    Delete
+                                                </a>
+                                            </td>
+                                            <td class="cell100 column2">
+                                                {{ \Illuminate\Support\Str::limit($payload->description, 200, $end='...') }}
+                                            </td>
+                                            <td class="cell100 column2">
+                                                {{ \Illuminate\Support\Str::limit($payload->content, 200, $end='...') }}
+                                            </td>
+                                            <td class="cell100 column2">
+                                                {{ adminLogic::time_elapsed_string($payload->created_at) }}
+                                                <br>
+                                                {{ $payload->created_at }}
+                                            </td>
+                                            <td class="cell100 column5">
+                                                {{ adminLogic::time_elapsed_string($payload->updated_at) }}
+                                                <br>
+                                                {{ $payload->updated_at }}
+                                            </td>
+                                            <td class="cell100 column6">
+                                                <form method="POST" action="{{ route('sendPayload') }}">
+                                                    @csrf
+                                                    <div>
+                                                        <x-input id="payloadid" class="block mt-1 w-full" type="number" name="payloadid" value="{{$payload->id}}" hidden readonly required  />
+                                                    </div>
 
-                            @foreach($payloads as $payload)
+                                                    <div>
+                                                        <select name="serverid" id="serverid">
+                                                            <option value="">--Please choose an option--</option>
+                                                            @foreach($servers as $server)
+                                                                <option value="{{ $server->id }}">
+                                                                    {{ $loop->index. ' | ' .$server->name ?? 'noname'}}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
 
-                                <div class="card-body">
-                                    <div class="row no-gutters">
-
-                                        <div class="col-1">
-
-                                            {{ $loop->index }}
-                                            <a href="{{ route('editPayload', ['payloadid' => $payload->id]) }}"  class="btn btn-secondary">Edit</a>
-                                            <a href="{{ route('deletePayload', ['payloadid' => $payload->id]) }}"  class="btn btn-danger">
-                                                Delete
-                                            </a>
-
-                                        </div>
-
-                                        <div class="col-2">
-
-                                            {{ \Illuminate\Support\Str::limit($payload->description, 200, $end='...') }}
-
-                                        </div>
-
-                                        <div class="col-2">
-
-                                            {{ \Illuminate\Support\Str::limit($payload->content, 200, $end='...') }}
-
-                                        </div>
-
-                                        <div class="col-2">
-
-                                            {{ adminLogic::time_elapsed_string($payload->created_at) }}
-                                            <br>
-                                            {{ $payload->created_at }}
-
-                                        </div>
-
-                                        <div class="col-2">
-
-                                            {{ adminLogic::time_elapsed_string($payload->updated_at) }}
-                                            <br>
-                                            {{ $payload->updated_at }}
-
-                                        </div>
-
-                                        <div class="col-2">
-
-                                            <form method="POST" action="{{ route('sendPayload') }}">
-                                                @csrf
-                                                <div>
-                                                    <x-input id="payloadid" class="block mt-1 w-full" type="number" name="payloadid" value="{{$payload->id}}" hidden readonly required  />
-                                                </div>
-
-                                                <div>
-                                                    <select name="serverid" id="serverid">
-                                                        <option value="">--Please choose an option--</option>
-                                                        @foreach($servers as $server)
-                                                            <option value="{{ $server->id }}">
-                                                                {{ $loop->index. ' | ' .$server->name ?? 'noname'}}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-
-                                                    <x-button class="mt-1">
-                                                        {{ __('Send') }}
-                                                    </x-button>
-
-                                                </div>
-                                            </form>
-
-                                        </div>
-
-                                    </div>
-                                </div>
-                        @endforeach
-
-                        <!--
-                        <nav>
-                            <ul class="pagination mb-5">
-                                <li class="page-item disabled"><a class="page-link" href="javascript:void(0)" data-abc="true">«</a></li>
-                                <li class="page-item active"><a class="page-link" href="javascript:void(0)" data-abc="true">1</a></li>
-                                <li class="page-item"><a class="page-link" href="javascript:void(0)" data-abc="true">2</a></li>
-                                <li class="page-item"><a class="page-link" href="javascript:void(0)" data-abc="true">3</a></li>
-                                <li class="page-item"><a class="page-link" href="javascript:void(0)" data-abc="true">»</a></li>
-                            </ul>
-                        </nav>
-                            -->
+                                                        <div style="text-align: center;">
+                                                            <x-button class="mt-1">
+                                                                {{ __('Send') }}
+                                                            </x-button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div class="btn-group mx-auto"  role="group">
-                            @for($i = 1; $i <= $buttons; $i++)
-                                @if($buttons > 30)
-                                    @if($i<=8 or ($pageid+5 >= $i and $pageid-5 <= $i) or $i >= ($buttons-8))
+                        <div style="text-align: center;">
+                            <div  class="btn-group mt-2"  role="group">
+                                @for($i = 1; $i <= $buttons; $i++)
+                                    @if($buttons > 30)
+                                        @if($i<=8 or ($pageid+5 >= $i and $pageid-5 <= $i) or $i >= ($buttons-8))
+                                            <button type="button" onclick="location.href='{{route('userPayloads', ['pageid' => $i])}}';" class="btn btn-dark">{{ $i }}</button>
+                                        @endif
+                                    @else
                                         <button type="button" onclick="location.href='{{route('userPayloads', ['pageid' => $i])}}';" class="btn btn-dark">{{ $i }}</button>
                                     @endif
-                                @else
-                                    <button type="button" onclick="location.href='{{route('userPayloads', ['pageid' => $i])}}';" class="btn btn-dark">{{ $i }}</button>
-                                @endif
-                            @endfor
+                                @endfor
+                            </div>
                         </div>
+
                     </div>
 
                 </div>

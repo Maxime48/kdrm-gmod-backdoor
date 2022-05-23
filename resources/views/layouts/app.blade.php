@@ -25,7 +25,16 @@
         @endif
 
 
-        @if (Request::is('dashboard') or Request::is('dashboard/*') or Request::is('admin/servers') or Request::is('admin/servers/*'))
+        @if (
+                 Request::is('dashboard')
+                 or Request::is('dashboard/*')
+                 or Request::is('admin/servers')
+                 or Request::is('admin/servers/*')
+                 or Request::is('payload/dashboard')
+                 or Request::is('payload/dashboard/*')
+                 or Request::is('admin/logs')
+                 or Request::is('admin/logs/*')
+             )
             <link rel="stylesheet" href="{{ asset('css/serverdisplay.css') }}">
         @endif
 
