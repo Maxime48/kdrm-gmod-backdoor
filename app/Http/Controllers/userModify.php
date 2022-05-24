@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\servers;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -12,7 +16,13 @@ use TimeHunter\LaravelGoogleReCaptchaV3\Validations\GoogleReCaptchaV3ValidationR
 
 class userModify extends Controller
 {
-
+    /**
+     * Handles a request from an admin to change the user's information
+     *
+     * @param $id
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function adminModify($id, Request $request){
         //Find the user
         $user = User::findOrFail($id);
@@ -60,11 +70,23 @@ class userModify extends Controller
         }
     }
 
+    /**
+     * Shows the settings for the user behind the request
+     *
+     * @param Request $request
+     * @return Application|Factory|View
+     */
     public function userMenu(Request $request){
         $user = $request->user();
         return view('settings.dashboard', compact('user'));
     }
 
+    /**
+     * Handles a request from a user to change its information
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function userModify(Request $request){
         $user = $request->user();
             $validator = Validator::make($request->all(), [
@@ -106,6 +128,12 @@ class userModify extends Controller
 
     }
 
+    /**
+     * Edit a user's information.
+     *
+     * @param $id
+     * @return Application|Factory|View
+     */
     public function changeMode($id)
     {
         $user = User::findOrFail($id);

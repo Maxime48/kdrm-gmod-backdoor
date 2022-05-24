@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\servers;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -12,6 +15,13 @@ use Symfony\Component\Console\Input\Input;
 
 class usersController extends Controller
 {
+    /**
+     * Displaying all the users for the admin view
+     *
+     * @param $id
+     * @param Request $request
+     * @return Application|Factory|View
+     */
     public function all($id=1, Request $request)
     {
         $id2 = $id;
@@ -55,6 +65,12 @@ class usersController extends Controller
         return view('admin.adminusers', compact('users','buttons', 'pageid'));
     }
 
+    /**
+     * Showing a user's profile
+     *
+     * @param $id
+     * @return Application|Factory|View
+     */
     public function show($id)
     {
 

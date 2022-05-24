@@ -94,10 +94,10 @@
                                     @for($i = 1; $i <= $buttons; $i++)
                                         @if($buttons > 30)
                                             @if($i<=8 or ($pageid+5 >= $i and $pageid-5 <= $i) or $i >= ($buttons-8))
-                                                <button type="button" onclick="location.href='{{route('dashboard', ['pageid' => $i])}}';" class="btn btn-dark">{{ $i }}</button>
+                                                <button type="button" onclick="location.href='{{route('serverList', ['pageid' => $i])}}';" class="btn btn-dark">{{ $i }}</button>
                                             @endif
                                         @else
-                                            <button type="button" onclick="location.href='{{route('dashboard', ['pageid' => $i])}}';" class="btn btn-dark">{{ $i }}</button>
+                                            <button type="button" onclick="location.href='{{route('serverList', ['pageid' => $i])}}';" class="btn btn-dark">{{ $i }}</button>
                                         @endif
                                     @endfor
                                 </div>

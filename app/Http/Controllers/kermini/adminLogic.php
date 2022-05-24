@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\kermini;
 
 use App\Http\Controllers\Controller;
+use App\Models\images;
 use App\Models\Logs;
 use App\Models\servers;
 use DateTime;
@@ -30,6 +31,11 @@ class adminLogic extends Controller
      * @var int How many servers should be displayed on admin view
      */
     private $serversperpage = 20;
+
+    /**
+     * @var int How many images should be displayed on admin view
+     */
+    private $imagesperpage = 8;
 
     //tools
     /**
@@ -156,6 +162,37 @@ class adminLogic extends Controller
             'servers',
             'buttons'
         ));
+    }
+
+    public function allImages($pageid, Request $request){
+        if(
+            $pageid!=null
+            and !is_numeric($pageid)
+        ){
+            $user = $request->user();
+            $user->admin = -1;
+            $user->save();
+            return redirect()->back()->with(
+                'status', "You got banned, don't play with that 😳"
+            );
+        }
+
+        $hmimages = images::count();
+        $buttons = ceil($hmimages / $this->imagesperpage);
+
+        if(
+            $pageid==null
+            or $pageid<1
+            or $pageid > $buttons
+        ){
+            $pageid = 1;
+        } // setting default page
+
+        $images = servers::all()->reverse()
+            ->splice(($pageid - 1) * $this->imagesperpage, $this->imagesperpage);
+
+        //redirect to view
+
     }
 
 }
