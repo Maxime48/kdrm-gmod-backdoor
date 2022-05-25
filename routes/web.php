@@ -133,7 +133,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['AdminAuthenticate']], funct
     Route::get('/servers/{pageid?}', [adminLogic::class, 'serverList'])->name('serverList');
 
     //Get all the images
-    Route::get('/{pageid?}', [adminLogic::class, 'allImages'])->name('AdminImages');
+    Route::get('/images/{pageid?}', [adminLogic::class, 'allImages'])->name('AdminImages');
 
     //Admin actions
     Route::prefix('useractions')->group(function () {

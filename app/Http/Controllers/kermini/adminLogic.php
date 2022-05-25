@@ -164,7 +164,7 @@ class adminLogic extends Controller
         ));
     }
 
-    public function allImages($pageid, Request $request){
+    public function allImages($pageid=null, Request $request){
         if(
             $pageid!=null
             and !is_numeric($pageid)
@@ -188,11 +188,14 @@ class adminLogic extends Controller
             $pageid = 1;
         } // setting default page
 
-        $images = servers::all()->reverse()
+        $images = images::all()->reverse()
             ->splice(($pageid - 1) * $this->imagesperpage, $this->imagesperpage);
 
         //redirect to view
-
+        return view('admin.images.dashboard', compact(
+           'images',
+           'buttons'
+        ));
     }
 
 }

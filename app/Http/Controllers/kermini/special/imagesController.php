@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
@@ -140,7 +141,11 @@ class imagesController extends Controller
 
         if(
             images::where('id', $imageid)->count() == 1 &&
-            images::where('id', $imageid)->first()->user_id == $request->user()->id
+            (
+                images::where('id', $imageid)->first()->user_id == $request->user()->id or
+                $request->user()->admin == 2 or
+                $request->user()->admin == 1
+            )
         ){
             Storage::delete(
                 images::where('id', $imageid)->first()->referencePath
@@ -154,7 +159,11 @@ class imagesController extends Controller
             $msg = "Image was not deleted";
         }
 
-        return redirect()->route('showImages')->with(
+        $redirect = 'showImages';
+        if(str_contains(URL::previous(), route('AdminImages'))){
+            $redirect = 'AdminImages';
+        }
+        return redirect()->route($redirect)->with(
             'status', $msg
         );
     }
