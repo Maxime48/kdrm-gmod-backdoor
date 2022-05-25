@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\kermini\special;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\kermini\adminLogic;
 use App\Models\images;
+use App\Models\Logs;
 use App\Models\Scrgb_Image_Requests;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -139,19 +141,22 @@ class imagesController extends Controller
             );
         }
 
+        $image = images::where('id', $imageid);
+
         if(
-            images::where('id', $imageid)->count() == 1 &&
+            $image->count() == 1 &&
             (
-                images::where('id', $imageid)->first()->user_id == $request->user()->id or
+                $image->first()->user_id == $request->user()->id or
                 $request->user()->admin == 2 or
                 $request->user()->admin == 1
             )
         ){
             Storage::delete(
-                images::where('id', $imageid)->first()->referencePath
+                $image->first()->referencePath
             );
 
-            images::where('id', $imageid)->delete();
+            $user_id_img = $image->first()->user_id; //saving before deletion
+            $image->delete();
 
             $msg = "Image deleted";
         }
@@ -159,10 +164,19 @@ class imagesController extends Controller
             $msg = "Image was not deleted";
         }
 
+        $log = new Logs();
+
         $redirect = 'showImages';
         if(str_contains(URL::previous(), route('AdminImages'))){
             $redirect = 'AdminImages';
+            $log->level = 'warning';
         }
+        else{
+            $log->level = 'notice';
+        }
+        $log->message = 'Image '.$imageid.' deleted by '.$request->user()->name;
+        $log->user_id = $user_id_img;
+        $log->save();
         return redirect()->route($redirect)->with(
             'status', $msg
         );
