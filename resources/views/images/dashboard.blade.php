@@ -43,6 +43,11 @@
 
                     <div class="container-fluid mt-100">
                         <div class="row">
+                            @if(count($images) == 0)
+                                <div style="text-align: center;" class="mb-3">
+                                    No image found
+                                </div>
+                            @endif
                             @foreach($images as $image)
                                 @if( Str::afterLast($image->fileName, ".") == "mp4")
                                     <div class="card mt-2 mr-1" style="width: 18rem;">
