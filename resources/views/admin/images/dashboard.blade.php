@@ -63,7 +63,10 @@
                                             {{ $image->fileName }}
                                         </div>
                                         <div class="mx-auto">
-                                            Size: {{ $image->fileSize }}
+                                            Size: {{ $image->fileSize }} | User :
+                                            <a href="{{ route('user', ['id' => $image->user_id]) }}">
+                                                {{ $image->user_id }}
+                                            </a>
                                         </div>
                                     </div>
                                 @else
