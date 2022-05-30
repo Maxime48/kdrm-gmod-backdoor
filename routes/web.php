@@ -135,6 +135,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['AdminAuthenticate']], funct
     //Get all the images
     Route::get('/images/{pageid?}', [adminLogic::class, 'allImages'])->name('AdminImages');
 
+    //Get all the payloads
+    Route::get('/payloads/{pageid?}', [adminLogic::class, 'allPayloads'])->name('AllPayloads');
+
     //Admin actions
     Route::prefix('useractions')->group(function () {
         Route::get('/ban/{id}', [usersModActions::class, 'ban'])->name('ban');

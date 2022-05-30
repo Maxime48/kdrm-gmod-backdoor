@@ -26,6 +26,9 @@
                         <x-nav-link :href="route('AdminImages')" :active="request()->routeIs('AdminImages')">
                             {{ __('Images') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('AllPayloads')" :active="request()->routeIs('AllPayloads')">
+                            {{ __('Payloads') }}
+                        </x-nav-link>
                     @else
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('Home') }}
@@ -128,6 +131,9 @@
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('AdminImages')" :active="request()->routeIs('AdminImages')">
                         {{ __('Images') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('AllPayloads')" :active="request()->routeIs('AllPayloads')">
+                        {{ __('Payloads') }}
                     </x-responsive-nav-link>
                     <form method="POST" action="{{ route('dashboard') }}">
                         @csrf

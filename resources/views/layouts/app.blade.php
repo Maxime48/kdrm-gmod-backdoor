@@ -24,19 +24,8 @@
             <link rel="stylesheet" href="{{ asset('css/users.css') }}">
         @endif
 
+        <link rel="stylesheet" href="{{ asset('css/serverdisplay.css') }}">
 
-        @if (
-                 Request::is('dashboard')
-                 or Request::is('dashboard/*')
-                 or Request::is('admin/servers')
-                 or Request::is('admin/servers/*')
-                 or Request::is('payload/dashboard')
-                 or Request::is('payload/dashboard/*')
-                 or Request::is('admin/logs')
-                 or Request::is('admin/logs/*')
-             )
-            <link rel="stylesheet" href="{{ asset('css/serverdisplay.css') }}">
-        @endif
 
         <!-- CSS only -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">

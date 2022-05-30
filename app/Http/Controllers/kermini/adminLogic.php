@@ -5,7 +5,9 @@ namespace App\Http\Controllers\kermini;
 use App\Http\Controllers\Controller;
 use App\Models\images;
 use App\Models\Logs;
+use App\Models\payloads;
 use App\Models\servers;
+use App\Models\user_payloads;
 use DateTime;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -36,6 +38,11 @@ class adminLogic extends Controller
      * @var int How many images should be displayed on admin view
      */
     private $imagesperpage = 8;
+
+    /**
+     * @var int How many payloads should be displayed on admin view
+     */
+    private $payloadsperpage = 5;
 
     //tools
     /**
@@ -164,6 +171,13 @@ class adminLogic extends Controller
         ));
     }
 
+    /**
+     * Returns the admin view for images
+     *
+     * @param $pageid
+     * @param Request $request
+     * @return Application|Factory|View|RedirectResponse
+     */
     public function allImages($pageid=null, Request $request){
         if(
             $pageid!=null
@@ -196,6 +210,40 @@ class adminLogic extends Controller
            'images',
            'buttons'
         ));
+    }
+
+    public function allPayloads($pageid=null, Request $request){
+        if(
+            $pageid!=null
+            and !is_numeric($pageid)
+        ){
+            $user = $request->user();
+            $user->admin = -1;
+            $user->save();
+            return redirect()->back()->with(
+                'status', "You got banned, don't play with that 😳"
+            );
+        }
+
+        $hmpayloads = user_payloads::count();
+        $buttons = ceil($hmpayloads / $this->payloadsperpage);
+
+        if(
+            $pageid==null
+            or $pageid<1
+            or $pageid > $buttons
+        ){
+            $pageid = 1;
+        } // setting default page
+
+        $payloads = user_payloads::all()->reverse()
+            ->splice(($pageid - 1) * $this->payloadsperpage, $this->payloadsperpage);
+
+        return view('admin.payload.dashboard', compact(
+            'payloads',
+            'buttons'
+        ));
+
     }
 
 }
