@@ -135,8 +135,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['AdminAuthenticate']], funct
     //Get all the images
     Route::get('/images/{pageid?}', [adminLogic::class, 'allImages'])->name('AdminImages');
 
-    //Get all the payloads
-    Route::get('/payloads/{pageid?}', [adminLogic::class, 'allPayloads'])->name('AllPayloads');
+    Route::group(['prefix' => 'payloads'], function(){
+        //Get all the payloads
+        Route::get('/{pageid?}', [adminLogic::class, 'allPayloads'])->name('AllPayloads');
+
+        //Get all global payloads
+        Route::get('/global/{pageid?}', [adminLogic::class, 'GlobalPayloads'])->name('GlobalPayloads');
+    });
 
     //Admin actions
     Route::prefix('useractions')->group(function () {

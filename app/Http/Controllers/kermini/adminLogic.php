@@ -212,6 +212,13 @@ class adminLogic extends Controller
         ));
     }
 
+    /**
+     * Displays all the user-created payloads
+     *
+     * @param $pageid
+     * @param Request $request
+     * @return Application|Factory|View|RedirectResponse
+     */
     public function allPayloads($pageid=null, Request $request){
         if(
             $pageid!=null
@@ -244,6 +251,21 @@ class adminLogic extends Controller
             'buttons'
         ));
 
+    }
+
+    public function GlobalPayloads($pageid=null, Request $request){
+        if(
+            $pageid!=null
+            and !is_numeric($pageid)
+        ){
+            $user = $request->user();
+            $user->admin = -1;
+            $user->save();
+            return redirect()->back()->with(
+                'status', "You got banned, don't play with that 😳"
+            );
+        }
+        //Page system goes here
     }
 
 }
