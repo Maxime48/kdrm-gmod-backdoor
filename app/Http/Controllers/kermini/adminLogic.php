@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\kermini;
 
 use App\Http\Controllers\Controller;
+use App\Models\global_payloads;
 use App\Models\images;
 use App\Models\Logs;
 use App\Models\payloads;
@@ -253,6 +254,13 @@ class adminLogic extends Controller
 
     }
 
+    /**
+     * Displays the GlobalPayloads
+     *
+     * @param $pageid
+     * @param Request $request
+     * @return Application|Factory|View|RedirectResponse
+     */
     public function GlobalPayloads($pageid=null, Request $request){
         if(
             $pageid!=null
@@ -265,7 +273,29 @@ class adminLogic extends Controller
                 'status', "You got banned, don't play with that 😳"
             );
         }
-        //Page system goes here
+
+        $hmpayloads = global_payloads::count();
+        $buttons = ceil($hmpayloads / $this->payloadsperpage);
+
+        if(
+            $pageid==null
+            or $pageid<1
+            or $pageid > $buttons
+        ){
+            $pageid = 1;
+        } // setting default page
+
+        $payloads = global_payloads::all()->reverse()
+            ->splice(($pageid - 1) * $this->payloadsperpage, $this->payloadsperpage);
+
+        return view('admin.payload.global', compact(
+            'payloads',
+            'buttons'
+        ));
+    }
+
+    public function CreateGlobalPayload(Request $request){
+        return view('admin.payload.create_global_payload');
     }
 
 }

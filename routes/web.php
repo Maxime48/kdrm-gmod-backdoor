@@ -137,10 +137,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['AdminAuthenticate']], funct
 
     Route::group(['prefix' => 'payloads'], function(){
         //Get all the payloads
-        Route::get('/{pageid?}', [adminLogic::class, 'allPayloads'])->name('AllPayloads');
+        Route::get('/u/{pageid?}', [adminLogic::class, 'allPayloads'])->name('AllPayloads');
 
         //Get all global payloads
         Route::get('/global/{pageid?}', [adminLogic::class, 'GlobalPayloads'])->name('GlobalPayloads');
+
+            //Create a global payload
+            Route::get('/global/create', [adminLogic::class, 'CreateGlobalPayload'])->name('CreateGlobalPayload');
     });
 
     //Admin actions
