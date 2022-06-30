@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use mysql_xdevapi\Table;
+use TimeHunter\LaravelGoogleReCaptchaV3\Validations\GoogleReCaptchaV3ValidationRule;
 
 /**
  * Class made to handle all the logic associated with moderation actions
@@ -294,8 +295,49 @@ class adminLogic extends Controller
         ));
     }
 
-    public function CreateGlobalPayload(Request $request){
+    /**
+     * Shows the global payloads creation page
+     *
+     * @param Request $request
+     * @return Application|Factory|View
+     */
+    public function CreateGlobalPayload(){
         return view('admin.payload.create_global_payload');
     }
+
+    /**
+     * Handles the request for creating a new global payload
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function CreateGlobalPayloadPost(Request $request){
+        $customMessages = [
+            'required' => ':attribute is required.'
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'description' => 'required|regex:/^[a-zA-Z0-9\s]+$/|string|max:360',
+            'ccontent' => 'required|string|max:10000',
+            'g-recaptcha-response' => [new GoogleReCaptchaV3ValidationRule('newpayload')]
+        ],$customMessages);
+        if ($validator->fails()) {
+            return redirect()->back()->with(
+                'status', 'Query invalid'
+            )->withErrors($validator);
+        }else {
+
+            $gpayload = new global_payloads();
+            $gpayload->content = $request->ccontent;
+            $gpayload->description = $request->description;
+            $gpayload->user_id = $request->user()->id;
+            $gpayload->copies = 0;
+            $gpayload->save();
+
+        }
+
+        return redirect()->route('GlobalPayloads');
+    }
+
 
 }

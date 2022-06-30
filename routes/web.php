@@ -135,15 +135,16 @@ Route::group(['prefix' => 'admin', 'middleware' => ['AdminAuthenticate']], funct
     //Get all the images
     Route::get('/images/{pageid?}', [adminLogic::class, 'allImages'])->name('AdminImages');
 
-    Route::group(['prefix' => 'payloads'], function(){
+    Route::group(['prefix' => 'payloads', 'middleware' => ['AdminLevel2']], function(){
         //Get all the payloads
         Route::get('/u/{pageid?}', [adminLogic::class, 'allPayloads'])->name('AllPayloads');
 
         //Get all global payloads
-        Route::get('/global/{pageid?}', [adminLogic::class, 'GlobalPayloads'])->name('GlobalPayloads');
+        Route::get('/global/all/{pageid?}', [adminLogic::class, 'GlobalPayloads'])->name('GlobalPayloads');
 
             //Create a global payload
-            Route::get('/global/create', [adminLogic::class, 'CreateGlobalPayload'])->name('CreateGlobalPayload');
+            Route::get('/global/create', [adminLogic::class, 'CreateGlobalPayload'])->name('CreateGlobalPayload'); //Shows creation page
+            Route::post('/global/create/post', [adminLogic::class, 'CreateGlobalPayloadPost'])->name('CreateGlobalPayloadPost'); //recaptcha needed
     });
 
     //Admin actions
@@ -156,7 +157,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['AdminAuthenticate']], funct
         //modify user's profile
        Route::prefix('modify')->group(function () {
             Route::get('/{id}', [userModify::class, 'changeMode'])->name('changeMode');
-            Route::post('/post/{id}', [userModify::class, 'adminModify'])->name('adminModify'); //recaptcha needed
+            Route::post('/post/{id}', [userModify::class, 'adminModify'])->name('adminModify'); //recaptcha implemented
        });
 
     });
