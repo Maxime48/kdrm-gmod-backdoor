@@ -39,11 +39,12 @@
                                 <table>
                                     <thead>
                                     <tr class="row100 head">
-                                        <th style="text-align: center;" class="cell100 column2 pl-4">Actions</th>
+                                        <th style="text-align: center;" class="cell100 column2">Actions</th>
                                         <th class="cell100 column2">Description</th>
                                         <th class="cell100 column3">Content</th>
                                         <th class="cell100 column2">Created at</th>
                                         <th class="cell100 column5">Updated at</th>
+                                        <th class="cell100 column5">Admin</th>
                                     </tr>
                                     </thead>
                                 </table>
@@ -54,10 +55,12 @@
                                     @foreach($payloads as $payload)
                                         <tr class="row100 body">
                                             <td class="cell100 column2">
-                                                <a href="{{ route('editPayload', ['payloadid' => $payload->id]) }}"  class="btn btn-secondary ml-12">Edit</a>
-                                                <a href="{{ route('deletePayload', ['payloadid' => $payload->id]) }}"  class="btn btn-danger">
-                                                    Delete
-                                                </a>
+                                                <div style="text-align: center;">
+                                                    <a href="{{ route('editGlobalPayload', ['payloadid' => $payload->id]) }}"  class="btn btn-secondary">Edit</a>
+                                                    <a href="{{ route('deleteGlobalPayload', ['payloadid' => $payload->id]) }}"  class="btn btn-danger">
+                                                        Delete
+                                                    </a>
+                                                </div>
                                             </td>
                                             <td class="cell100 column2">
                                                 {{ \Illuminate\Support\Str::limit($payload->description, 200, $end='...') }}
@@ -74,6 +77,9 @@
                                                 {{ adminLogic::time_elapsed_string($payload->updated_at) }}
                                                 <br>
                                                 {{ $payload->updated_at }}
+                                            </td>
+                                            <td class="cell100 column5">
+                                                {{ adminLogic::getUserById($payload->user_id)->name }}
                                             </td>
                                         </tr>
                                     @endforeach

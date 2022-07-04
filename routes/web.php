@@ -139,12 +139,23 @@ Route::group(['prefix' => 'admin', 'middleware' => ['AdminAuthenticate']], funct
         //Get all the payloads
         Route::get('/u/{pageid?}', [adminLogic::class, 'allPayloads'])->name('AllPayloads');
 
-        //Get all global payloads
-        Route::get('/global/all/{pageid?}', [adminLogic::class, 'GlobalPayloads'])->name('GlobalPayloads');
+        Route::group(['prefix' => 'global'], function(){
+            //Get all global payloads
+            Route::get('/all/{pageid?}', [adminLogic::class, 'GlobalPayloads'])->name('GlobalPayloads');
 
-            //Create a global payload
-            Route::get('/global/create', [adminLogic::class, 'CreateGlobalPayload'])->name('CreateGlobalPayload'); //Shows creation page
-            Route::post('/global/create/post', [adminLogic::class, 'CreateGlobalPayloadPost'])->name('CreateGlobalPayloadPost'); //recaptcha needed
+                //Create a global payload
+                Route::get('/create', [adminLogic::class, 'CreateGlobalPayload'])->name('CreateGlobalPayload'); //Shows creation page
+                Route::post('/create/post', [adminLogic::class, 'CreateGlobalPayloadPost'])->name('CreateGlobalPayloadPost'); //recaptcha implemented
+
+                //Edit a global payload
+                Route::group(['prefix' => 'edit'], function(){
+                    Route::get('/{payloadid}', [adminLogic::class, 'editGlobalPayload'])->name('editGlobalPayload');
+                    Route::post('/post/', [adminLogic::class, 'editGlobalPayloadPost'])->name('editGlobalPayloadPost'); //recaptcha needed
+                });
+
+                //Delete a global payload
+                Route::get('/delete/{payloadid}', [adminLogic::class, 'deleteGlobalPayload'])->name('deleteGlobalPayload');
+        });
     });
 
     //Admin actions

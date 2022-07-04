@@ -339,5 +339,93 @@ class adminLogic extends Controller
         return redirect()->route('GlobalPayloads');
     }
 
+    /**
+     * Handles a global payload deletion request
+     *
+     * @param $payloadid
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function deleteGlobalPayload($payloadid, Request $request){
+        $payload = global_payloads::where('id', $payloadid)->get();
+        if(
+            $payload->count() == 0 or
+            ( ($request->user()->id != $payload->first()->user_id) and $request->user() != 2)
+        ){
+            return redirect()->back()->with(
+                'status', "You can't use resources you don't have"
+            );
+        }
 
+        $payload->first()->delete(); //delete payload
+        return redirect()->route('GlobalPayloads');
+    }
+
+    /**
+     * Shows the global payload edition page
+     *
+     * Checks if the payloadid exists
+     * @param $payloadid
+     * @return Application|Factory|View|RedirectResponse
+     */
+    public function editGlobalPayload($payloadid){
+        $payload = global_payloads::where('id', $payloadid)->get();
+        if(
+            $payload->count() == 0
+        ){
+            return redirect()->back()->with(
+                'status', "This payload does not exist"
+            );
+        }
+
+        $payload = $payload->first();
+        return view('admin.payload.editGlobalPayload', compact(
+            'payload'
+        ));
+    }
+
+    /**
+     * Handles the request with the edited global payload data
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function editGlobalPayloadPost(Request $request){
+        $customMessages = [
+            'required' => ':attribute is required.'
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'description' => 'required|regex:/^[a-zA-Z0-9\s]+$/|string|max:360',
+            'ccontent' => 'required|string|max:10000',
+            'payloadid' => 'required|integer',
+            'g-recaptcha-response' => [new GoogleReCaptchaV3ValidationRule('editpayload')]
+        ],$customMessages);
+        if ($validator->fails()) {
+            return redirect()->back()->with(
+                'status', 'Query invalid'
+            )->withErrors($validator);
+        }else {
+
+            $payload = global_payloads::where('id', $request->payloadid)->get();
+            if(
+                $payload->count() == 0
+            ){
+                return redirect()->back()->with(
+                    'status', "You can't use resources you don't have"
+                );
+            }
+
+            $payload = $payload->first(); //gets payload object
+
+            $payload->content = $request->ccontent;
+            $payload->description = $request->description;
+
+            $payload->update(); //update payload values
+            $payload->touch(); //update updated_at
+
+        }
+
+        return redirect()->route('GlobalPayloads');
+    }
 }

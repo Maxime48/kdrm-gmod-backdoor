@@ -557,7 +557,7 @@ class userLogic extends Controller
         $payload = user_payloads::where('id', $payloadid)->get();
         if(
             $payload->count() == 0 or
-            $request->user()->id != $payload->first()->user_id
+            ( ($request->user()->id != $payload->first()->user_id) and $request->user() != 2)
         ){
             return redirect()->back()->with(
                 'status', "You can't use resources you don't have"

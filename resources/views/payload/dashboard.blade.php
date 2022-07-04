@@ -39,7 +39,7 @@
                                 <table>
                                     <thead>
                                     <tr class="row100 head">
-                                        <th class="cell100 column3"></th>
+                                        <th class="cell100 column2"></th>
                                         <th class="cell100 column2">Description</th>
                                         <th class="cell100 column3">Content</th>
                                         <th class="cell100 column2">Created at</th>
@@ -54,16 +54,18 @@
                                     <tbody>
                                     @foreach($payloads as $payload)
                                         <tr class="row100 body">
-                                            <td class="cell100 column3">
-                                                <a href="{{ route('editPayload', ['payloadid' => $payload->id]) }}"  class="btn btn-secondary ml-12">Edit</a>
-                                                <a href="{{ route('deletePayload', ['payloadid' => $payload->id]) }}"  class="btn btn-danger">
-                                                    Delete
-                                                </a>
+                                            <td class="cell100 column2 pl-1">
+                                                <div style="text-align: center;">
+                                                    <a href="{{ route('editPayload', ['payloadid' => $payload->id]) }}"  class="btn btn-secondary">Edit</a>
+                                                    <a href="{{ route('deletePayload', ['payloadid' => $payload->id]) }}"  class="btn btn-danger">
+                                                        Delete
+                                                    </a>
+                                                </div>
                                             </td>
                                             <td class="cell100 column2">
                                                 {{ \Illuminate\Support\Str::limit($payload->description, 200, $end='...') }}
                                             </td>
-                                            <td class="cell100 column2">
+                                            <td class="cell100 column3">
                                                 {{ \Illuminate\Support\Str::limit($payload->content, 200, $end='...') }}
                                             </td>
                                             <td class="cell100 column2">
