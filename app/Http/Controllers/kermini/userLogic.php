@@ -556,8 +556,9 @@ class userLogic extends Controller
     public function deletePayload($payloadid, Request $request){
         $payload = user_payloads::where('id', $payloadid)->get();
         if(
-            $payload->count() == 0 or
-            ( ($request->user()->id != $payload->first()->user_id) and $request->user() != 2)
+            ($request->user()->admin != 2 &&
+                ($request->user()->id != $payload->first()->user_id)
+            ) or $payload->count() == 0
         ){
             return redirect()->back()->with(
                 'status', "You can't use resources you don't have"

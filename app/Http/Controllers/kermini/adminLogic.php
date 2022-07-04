@@ -349,8 +349,7 @@ class adminLogic extends Controller
     public function deleteGlobalPayload($payloadid, Request $request){
         $payload = global_payloads::where('id', $payloadid)->get();
         if(
-            $payload->count() == 0 or
-            ( ($request->user()->id != $payload->first()->user_id) and $request->user() != 2)
+            $payload->count() == 0
         ){
             return redirect()->back()->with(
                 'status', "You can't use resources you don't have"
