@@ -63,6 +63,8 @@
                                                                 alert-warning
                                                             @elseif($log->level == "critical")
                                                                 alert-danger
+                                                                @elseif($log->level == "alert")
+                                                                alert-danger
                                                             @elseif($log->level == "debug")
                                                                 alert-primary
                                                             @elseif($log->level == "info")

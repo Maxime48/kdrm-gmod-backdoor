@@ -17,6 +17,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use mysql_xdevapi\Table;
 use TimeHunter\LaravelGoogleReCaptchaV3\Validations\GoogleReCaptchaV3ValidationRule;
 
@@ -334,6 +335,13 @@ class adminLogic extends Controller
             $gpayload->copies = 0;
             $gpayload->save();
 
+            $log = new Logs();
+            $log->level = 'alert';
+            $log->message = $request->user()->name . ' created a global payload ('
+            . Str::limit($request->description, 200, $end='...)');
+            $log->user_id = $request->user()->id;
+            $log->save();
+
         }
 
         return redirect()->route('GlobalPayloads');
@@ -355,6 +363,13 @@ class adminLogic extends Controller
                 'status', "You can't use resources you don't have"
             );
         }
+
+        $log = new Logs();
+        $log->level = 'alert';
+        $log->message = $request->user()->name . ' deleted a global payload ('
+            . Str::limit($payload->first()->description, 200, $end='...)');
+        $log->user_id = $request->user()->id;
+        $log->save();
 
         $payload->first()->delete(); //delete payload
         return redirect()->route('GlobalPayloads');
@@ -422,6 +437,13 @@ class adminLogic extends Controller
 
             $payload->update(); //update payload values
             $payload->touch(); //update updated_at
+
+            $log = new Logs();
+            $log->level = 'alert';
+            $log->message = $request->user()->name . ' edited a global payload ('
+                . Str::limit($payload->description, 200, $end='...)');
+            $log->user_id = $request->user()->id;
+            $log->save();
 
         }
 
