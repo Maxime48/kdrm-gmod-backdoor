@@ -61,6 +61,9 @@ Route::group(['prefix' => 'payload', 'middleware' => ['auth']], function(){
 
     Route::get('/delete/{payloadid}', [userLogic::class, 'deletePayload'])->name('deletePayload');
 
+    Route::get('/global/{pageid?}', [userLogic::class, 'GlobalPayloads'])->name('U-GlobalPayloads');
+    Route::post('/global/download', [userLogic::class, 'DownloadGlobalPayload'])->name('DownloadGlobalPayload');
+
 });
 
 //show server details

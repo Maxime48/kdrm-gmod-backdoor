@@ -45,6 +45,7 @@
                                         <th class="cell100 column2">Created at</th>
                                         <th class="cell100 column5">Updated at</th>
                                         <th class="cell100 column5">Admin</th>
+                                        <th class="cell100 column5">Downloads</th>
                                     </tr>
                                     </thead>
                                 </table>
@@ -80,6 +81,9 @@
                                             </td>
                                             <td class="cell100 column5">
                                                 {{ adminLogic::getUserById($payload->user_id)->name }}
+                                            </td>
+                                            <td class="cell100 column5">
+                                                {{ $payload->copies }}
                                             </td>
                                         </tr>
                                     @endforeach

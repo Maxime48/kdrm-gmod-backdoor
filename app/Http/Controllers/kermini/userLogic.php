@@ -4,6 +4,7 @@ namespace App\Http\Controllers\kermini;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\kermini\special\screenGrabber;
+use App\Models\global_payloads;
 use App\Models\Logs;
 use App\Models\payloads_queue;
 use App\Models\servers;
@@ -558,11 +559,26 @@ class userLogic extends Controller
         if(
             ($request->user()->admin != 2 &&
                 ($request->user()->id != $payload->first()->user_id)
-            ) or $payload->count() == 0
+            )
+            or $payload->count() == 0
+            or (
+                adminLogic::getUserById($payload->first()->user_id)->admin >= $request->user()->admin &&
+                $request->user()->id != $payload->first()->user_id
+            )
         ){
             return redirect()->back()->with(
                 'status', "You can't use resources you don't have"
             );
+        }
+
+        if($payload->first()->user_id != $request->user()->user_id){
+            $log = new Logs();
+            $log->level = 'warning';
+            $log->message = $request->user()->name . ' deleted a payload ('
+                . Str::limit($payload->first()->description, 200, $end='...)') .
+                'from ' . adminLogic::getUserById($payload->first()->user_id)->name . '('.$payload->first()->user_id.')';
+            $log->user_id = $request->user()->id;
+            $log->save();
         }
 
         $payload->first()->delete(); //delete payload
@@ -645,4 +661,88 @@ class userLogic extends Controller
 
     }
 
+    /**
+     * Shows all the global payloads to the user
+     *
+     * @param $pageid
+     * @param Request $request
+     * @return Application|Factory|View|RedirectResponse
+     */
+    public function GlobalPayloads($pageid=null, Request $request){
+        if(
+            $pageid!=null
+            and !is_numeric($pageid)
+        ){
+            $user = $request->user();
+            $user->admin = -1;
+            $user->save();
+            return redirect()->back()->with(
+                'status', "You got banned, don't play with that 😳"
+            );
+        }
+
+        $hmpayloads = global_payloads::count();
+        $buttons = ceil($hmpayloads / $this->payloadsperpage);
+
+        if(
+            $pageid==null
+            or $pageid<1
+            or $pageid > $buttons
+        ){
+            $pageid = 1;
+        } // setting default page
+
+        $payloads = global_payloads::all()->reverse()
+            ->splice(($pageid - 1) * $this->payloadsperpage, $this->payloadsperpage);
+
+        return view('payload.global', compact(
+            'payloads',
+            'buttons'
+        ));
+    }
+
+    /**
+     * Downloads the selected global payload to the user's payloads
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function DownloadGlobalPayload(Request $request){
+        $customMessages = [
+            'required' => ':attribute is required.'
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'payloadid' => 'required|integer|max:10',
+            'g-recaptcha-response' => [new GoogleReCaptchaV3ValidationRule('DownloadGlobalPayload')]
+        ],$customMessages);
+        if ($validator->fails()) {
+            return redirect()->back()->with(
+                'status', 'Query invalid'
+            )->withErrors($validator);
+        }else {
+
+            $selected_payload = global_payloads::where('id', $request->payloadid);
+
+            if($selected_payload->count() != 1){
+                return redirect()->back()->with(
+                    'status', "This global payload does not exist"
+                );
+            }
+
+            $selected_payload = $selected_payload->first();
+
+            $userPayload = new user_payloads();
+            $userPayload->user_id = $request->user()->id;
+            $userPayload->content = $selected_payload->content;
+            $userPayload->description = $selected_payload->description;
+            $userPayload->save();
+
+            $selected_payload->copies = $selected_payload->copies + 1;
+            $selected_payload->update();
+
+        }
+
+        return redirect()->route('userPayloads');
+    }
 }

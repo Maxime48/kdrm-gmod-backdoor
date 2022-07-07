@@ -143,6 +143,11 @@ return [
             'threshold' => 0.9,
             'score_comparision' => true,
         ],
+        [
+            'action' => 'DownloadGlobalPayload',
+            'threshold' => 0.9,
+            'score_comparision' => true,
+        ],
     ],
 
     /*

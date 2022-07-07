@@ -49,6 +49,9 @@
                                     @foreach($payloads as $payload)
                                         <tr class="row100 body">
                                             <td class="cell100 column1">
+                                                <a href="{{ route('deletePayload', ['payloadid' => $payload->id]) }}"  class="btn btn-danger">
+                                                    X
+                                                </a>
                                                 {{ \Illuminate\Support\Str::limit($payload->description, 200, $end='...') }}
                                             </td>
                                             <td class="cell100 column3">
