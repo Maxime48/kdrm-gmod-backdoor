@@ -54,6 +54,9 @@
                                         @foreach($servers as $server)
                                             <tr class="row100 body">
                                                 <td class="cell100 column1">
+                                                    <a href="{{ route('ServerDeletion', ['serverid' => $server->id]) }}"  class="btn btn-danger">
+                                                        X
+                                                    </a>
                                                     <a style="text-decoration: none;" href="{{ route('ServerDetails', ['serverid' => $server->id]) }}" >
                                                         {{ $server->name }}
                                                     </a>

@@ -576,7 +576,7 @@ class userLogic extends Controller
             $log->level = 'warning';
             $log->message = $request->user()->name . ' deleted a payload ('
                 . Str::limit($payload->first()->description, 200, $end='...)') .
-                'from ' . adminLogic::getUserById($payload->first()->user_id)->name . '('.$payload->first()->user_id.')';
+                ' from ' . adminLogic::getUserById($payload->first()->user_id)->name . '('.$payload->first()->user_id.')';
             $log->user_id = $request->user()->id;
             $log->save();
         }
@@ -744,5 +744,25 @@ class userLogic extends Controller
         }
 
         return redirect()->route('userPayloads');
+    }
+
+    public function deleteServer($serverid, Request $request){
+        $server = servers::where('id', $serverid);
+
+        if($server->count() != 1){
+            return redirect()->back()->with(
+                'status', "This server does not exist"
+            );
+        }
+
+        if($server->first()->user_id != $request->user()->id){
+            return redirect()->back()->with(
+                'status', "This is not your server"
+            );
+        }
+
+        $server->first()->delete();
+
+        return redirect()->route("dashboard");
     }
 }

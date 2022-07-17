@@ -69,7 +69,7 @@ Route::group(['prefix' => 'payload', 'middleware' => ['auth']], function(){
 //show server details
 Route::get('/server/{serverid}', [userLogic::class, 'displayServerDetails'])->name('ServerDetails');
 
-//Server deletion should be added with a post route
+Route::get('/delete/{serverid}', [userLogic::class, 'deleteServer'])->name('ServerDeletion');
 
 Route::group(['prefix' => 'scrgrb', 'middleware' => ['auth']], function(){
     //Print selection page for both methods
