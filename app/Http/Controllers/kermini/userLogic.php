@@ -746,6 +746,13 @@ class userLogic extends Controller
         return redirect()->route('userPayloads');
     }
 
+    /**
+     * Deletes the requested server
+     *
+     * @param $serverid
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function deleteServer($serverid, Request $request){
         $server = servers::where('id', $serverid);
 
