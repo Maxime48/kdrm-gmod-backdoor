@@ -28,6 +28,9 @@
 
 
                     <div class="container-fluid mt-100">
+                        <div class="alert alert-warning" role="alert">
+                            This is an experimental feature, feel free to report any bugs.
+                        </div>
                         <div class="card-group mx-8">
 
                             <div class="card rounded">

@@ -2,6 +2,7 @@
 
 
 use App\Http\Controllers\kermini\special\imagesController;
+use App\Http\Controllers\kermini\special\IpBlocker;
 use App\Http\Controllers\kermini\special\screenGrabber;
 use App\Http\Controllers\kermini\userLogic;
 use App\Http\Controllers\userModify;
@@ -102,6 +103,13 @@ Route::group(['prefix' => 'images', 'middleware' => ['auth']], function(){
     Route::post('/scrgrb/{imagekey}/', [imagesController::class, 'saveScreenGrab'])->name('saveScreenGrab')->withoutMiddleware('auth');
 });
 
-//ip restriction for servers should be added somewhere here
+Route::group(['prefix' => 'block'], function(){
+    Route::get('/all/{pageid?}', [IpBlocker::class, 'UserBlockedIps'])->name('UserBlockedIps');
+
+    Route::post('/new', [IpBlocker::class, 'UserPostNew'])->name('UserPostNew');
+
+    Route::get('/edit/{restriction}', [IpBlocker::class, 'UserEditRestriction'])->name('UserEditRestriction');
+    Route::get('/delete/{restriction}', [IpBlocker::class, 'UserDeleteRestriction'])->name('UserDeleteRestriction');
+});
 
 require __DIR__.'/auth.php';

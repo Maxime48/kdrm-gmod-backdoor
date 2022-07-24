@@ -30,9 +30,14 @@
 
 
                         <div class="d-flex flex-wrap justify-content-between">
-                            <!--<div class="col-12 col-md-3 p-0 mb-3"> <input type="text" class="form-control" placeholder="Search..."> </div>-->
+                            <div class="col-12 col-md-3 p-0 mb-3">
+                                <input type="text" class="form-control" placeholder="Search...">
+                            </div>
+                            <a href="{{ route('UserBlockedIps') }}"  class="btn btn-secondary mb-2">
+                                <i class="fas fa-shield-alt"></i>
+                                IP Blocker
+                            </a>
                         </div>
-
 
                         <div class="table100 ver1 m-b-110">
                             <div class="table100-head">
