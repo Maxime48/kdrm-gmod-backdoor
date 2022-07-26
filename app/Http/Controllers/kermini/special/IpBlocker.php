@@ -57,6 +57,12 @@ class IpBlocker extends Controller
         ));
     }
 
+    /**
+     * Registers a new IP restriction
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function UserPostNew (Request $request){
         $customMessages = [
             'required' => ':attribute is required.'
@@ -87,4 +93,93 @@ class IpBlocker extends Controller
         return redirect()->route('UserBlockedIps');
     }
 
+    /**
+     * Displays the restriction edition page
+     *
+     * @param $restriction
+     * @param Request $request
+     * @return Application|Factory|View|RedirectResponse
+     */
+    public function UserEditRestriction($restriction, Request $request){
+        $restriction = IpBan_Servers::where('id', $restriction);
+
+        if(
+            $restriction->count() == 0 or
+            $restriction->first()->user_id != $request->user()->id
+        ){
+            return redirect()->back()->with(
+                'status', "You can't use resources you don't have"
+            );
+        }
+
+        $restriction = $restriction->first();
+        return view('ipblck.editrestriction', compact(
+            'restriction'
+        ));
+    }
+
+    /**
+     * Handles the restriction's new data for edition
+     *
+     * @param $restriction
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function UserEditRestrictionPost($restriction, Request $request){
+        $customMessages = [
+            'required' => ':attribute is required.'
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'ip' => new ipv4_range,
+            'g-recaptcha-response' => [new GoogleReCaptchaV3ValidationRule('editrestriction')]
+        ],$customMessages);
+        if ($validator->fails()) {
+            return redirect()->back()->with(
+                'status', 'Query invalid'
+            )->withErrors($validator);
+        }else {
+            $restriction = IpBan_Servers::where('id', $restriction);
+
+            if(
+                $restriction->count() == 0 or
+                $restriction->first()->user_id != $request->user()->id
+            ){
+                return redirect()->back()->with(
+                    'status', "You can't use resources you don't have"
+                );
+            }
+
+            $restriction = $restriction->first();
+            $restriction->forbiddenIp = $request->ip;
+            $restriction->save();
+
+        }
+
+        return redirect()->route('UserBlockedIps');
+    }
+
+    /**
+     * Deletes the selected restriction
+     *
+     * @param $restriction
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function UserDeleteRestriction($restriction, Request $request){
+        $restriction = IpBan_Servers::where('id', $restriction);
+
+        if(
+            $restriction->count() == 0 or
+            $restriction->first()->user_id != $request->user()->id
+        ){
+            return redirect()->back()->with(
+                'status', "You can't use resources you don't have"
+            );
+        }
+
+        $restriction->first()->delete();
+
+        return redirect()->route('UserBlockedIps');
+    }
 }

@@ -109,6 +109,8 @@ Route::group(['prefix' => 'block'], function(){
     Route::post('/new', [IpBlocker::class, 'UserPostNew'])->name('UserPostNew');
 
     Route::get('/edit/{restriction}', [IpBlocker::class, 'UserEditRestriction'])->name('UserEditRestriction');
+    Route::post('/edit/{restriction}', [IpBlocker::class, 'UserEditRestrictionPost'])->name('UserEditRestrictionPost');
+
     Route::get('/delete/{restriction}', [IpBlocker::class, 'UserDeleteRestriction'])->name('UserDeleteRestriction');
 });
 

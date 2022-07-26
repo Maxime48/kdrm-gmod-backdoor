@@ -153,6 +153,11 @@ return [
             'threshold' => 0.9,
             'score_comparision' => true,
         ],
+        [
+            'action' => 'editrestriction',
+            'threshold' => 0.9,
+            'score_comparision' => true,
+        ],
     ],
 
     /*
