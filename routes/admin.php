@@ -80,10 +80,10 @@ Route::group(['prefix' => 'admin'], function(){
     Route::group(['prefix' => 'block'], function(){
         Route::get('/all/{pageid?}', [IpBlocker::class, 'AdminBlockedIps'])->name('AdminBlockedIps');
 
-        //Route::post('/new', [IpBlocker::class, 'AdminPostNew'])->name('AdminPostNew');
+        Route::post('/new', [IpBlocker::class, 'AdminPostNew'])->name('AdminPostNew');
 
-        //Route::get('/edit/{restriction}', [IpBlocker::class, 'AdminEditRestriction'])->name('AdminEditRestriction');
-        //Route::post('/edit/{restriction}', [IpBlocker::class, 'AdminEditRestrictionPost'])->name('AdminEditRestrictionPost');
+        Route::get('/edit/{restriction}', [IpBlocker::class, 'AdminEditRestriction'])->name('AdminEditRestriction');
+        Route::post('/edit/{restriction}', [IpBlocker::class, 'AdminEditRestrictionPost'])->name('AdminEditRestrictionPost');
 
         //Route::get('/delete/{restriction}', [IpBlocker::class, 'AdminDeleteRestriction'])->name('AdminDeleteRestriction');
     });

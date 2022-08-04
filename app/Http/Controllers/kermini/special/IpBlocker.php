@@ -4,6 +4,7 @@ namespace App\Http\Controllers\kermini\special;
 
 use App\Http\Controllers\Controller;
 use App\Models\IpBan_Servers;
+use App\Models\Logs;
 use App\Rules\ipv4_range;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -11,6 +12,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use TimeHunter\LaravelGoogleReCaptchaV3\Validations\GoogleReCaptchaV3ValidationRule;
 
 class IpBlocker extends Controller
@@ -18,7 +20,7 @@ class IpBlocker extends Controller
     private $restrictions = 5;
 
     /**
-     * Shows all the the IPs blocked by the user
+     * Shows all the IPs blocked by the user
      *
      * @param $pageid
      * @param Request $request
@@ -77,7 +79,11 @@ class IpBlocker extends Controller
                 'status', 'Query invalid'
             )->withErrors($validator);
         }else {
-            if(IpBan_Servers::where('forbiddenIp',$request->ip)->count() == 0){
+            if(
+                IpBan_Servers::where('user_id',$request->user()->id)
+                    ->where('forbiddenIp',$request->ip)
+                    ->count() == 0
+            ){
                 $restriction = new IpBan_Servers();
                 $restriction->forbiddenIp = $request->ip;
                 $restriction->global = 0;
@@ -183,6 +189,13 @@ class IpBlocker extends Controller
         return redirect()->route('UserBlockedIps');
     }
 
+    /**
+     * Displays all the blocked IPs for admins
+     *
+     * @param $pageid
+     * @param Request $request
+     * @return Application|Factory|View|RedirectResponse
+     */
     public function AdminBlockedIps($pageid=NULL, Request $request){
         if(
             $pageid!=null
@@ -213,6 +226,66 @@ class IpBlocker extends Controller
         return view('admin.ipblck.dashboard', compact(
             'restrictions',
             'buttons'
+        ));
+    }
+
+    /**
+     * Handles data for a new global restriction
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function AdminPostNew(Request $request){
+        $customMessages = [
+            'required' => ':attribute is required.'
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'ip' => new ipv4_range,
+            'g-recaptcha-response' => [new GoogleReCaptchaV3ValidationRule('AdminIpBlock')]
+        ],$customMessages);
+        if ($validator->fails()) {
+            return redirect()->back()->with(
+                'status', 'Query invalid'
+            )->withErrors($validator);
+        }else {
+            if(
+                IpBan_Servers::where('global','1')
+                    ->where('forbiddenIp',$request->ip)
+                    ->count() == 0
+            ) {
+                $restriction = new IpBan_Servers();
+                $restriction->forbiddenIp = $request->ip;
+                $restriction->global = 1;
+                $restriction->user_id = $request->user()->id;
+                $restriction->save();
+
+                $log = new Logs();
+                $log->level = 'critical';
+                $log->message = $request->user()->name . ' added a global restriction ('.$request->ip.')';
+                $log->user_id = $request->user()->id;
+                $log->save();
+            }
+        }
+
+        return redirect()->route('AdminBlockedIps');
+    }
+
+    public function AdminEditRestriction($restriction, Request $request){
+        $restriction = IpBan_Servers::where('id', $restriction);
+
+        if(
+            $restriction->count() == 0 or
+            $request->user()->admin != 2
+        ){
+            return redirect()->back()->with(
+                'status', "Not authorized to delete to edit this."
+            );
+        }
+
+        $restriction = $restriction->first();
+        return view('admin.ipblck.editrestriction', compact(
+            'restriction'
         ));
     }
 }

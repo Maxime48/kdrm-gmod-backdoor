@@ -34,9 +34,9 @@
                                 <input type="text" class="form-control" placeholder="Search...">
                             </div>
 
-                            <form method="POST" action="{{ route('UserPostNew') }}">
+                            <form method="POST" action="{{ route('AdminPostNew') }}">
                                 @csrf
-                                {!!  GoogleReCaptchaV3::renderField('UserIpBlock', 'UserIpBlock') !!}
+                                {!!  GoogleReCaptchaV3::renderField('AdminIpBlock', 'AdminIpBlock') !!}
 
                                 <div class="mb-3 input-group">
                                     <input name="ip" type="text" class="form-control mr-2" placeholder="192.168.*.*">
@@ -90,7 +90,7 @@
                                                 {{ adminLogic::time_elapsed_string($restriction->updated_at) }}
                                             </td>
                                             <td class="cell100 column3">
-                                                <a href="{{ route('UserEditRestriction', ['restriction' => $restriction->id]) }}"  class="btn btn-secondary">Edit</a>
+                                                <a href="{{ route('AdminEditRestriction', ['restriction' => $restriction->id]) }}"  class="btn btn-secondary">Edit</a>
                                                 <a href="{{ route('UserDeleteRestriction', ['restriction' => $restriction->id]) }}"  class="btn btn-danger">
                                                     Delete
                                                 </a>
