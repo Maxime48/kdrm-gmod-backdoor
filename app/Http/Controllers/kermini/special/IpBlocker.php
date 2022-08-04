@@ -182,4 +182,37 @@ class IpBlocker extends Controller
 
         return redirect()->route('UserBlockedIps');
     }
+
+    public function AdminBlockedIps($pageid=NULL, Request $request){
+        if(
+            $pageid!=null
+            and !is_numeric($pageid)
+        ){
+            $user = $request->user();
+            $user->admin = -1;
+            $user->save();
+            return redirect()->back()->with(
+                'status', "You got banned, don't play with that 😳"
+            );
+        }
+
+        $hmrestrictions = IpBan_Servers::all()->count();
+        $buttons = ceil($hmrestrictions / $this->restrictions);
+
+        if(
+            $pageid==null
+            or $pageid<1
+            or $pageid > $buttons
+        ){
+            $pageid = 1;
+        } // setting default page
+
+        $restrictions = IpBan_Servers::all()->reverse()
+            ->splice(($pageid - 1) * $this->restrictions, $this->restrictions);
+
+        return view('admin.ipblck.dashboard', compact(
+            'restrictions',
+            'buttons'
+        ));
+    }
 }

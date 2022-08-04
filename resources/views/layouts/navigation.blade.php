@@ -91,6 +91,9 @@
 
                             </x-dropdown>
                         </div>
+                        <x-nav-link :href="route('AdminBlockedIps')" :active="request()->routeIs('AdminBlockedIps')">
+                            {{ __('IP Blocker') }}
+                        </x-nav-link>
                     @else
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('Home') }}
@@ -208,6 +211,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('GlobalPayloads')" :active="request()->routeIs('GlobalPayloads')">
                     {{ __('Global Payloads') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('AdminBlockedIps')" :active="request()->routeIs('AdminBlockedIps')">
+                    {{ __('IP Blocker') }}
                 </x-responsive-nav-link>
                 <form method="POST" action="{{ route('dashboard') }}">
                     @csrf

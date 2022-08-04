@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\kermini\adminLogic;
+use App\Http\Controllers\kermini\special\IpBlocker;
 use App\Http\Controllers\userModify;
 use App\Http\Controllers\usersController;
 use App\Http\Controllers\usersModActions;
@@ -76,7 +77,16 @@ Route::group(['prefix' => 'admin'], function(){
 
     });
 
+    Route::group(['prefix' => 'block'], function(){
+        Route::get('/all/{pageid?}', [IpBlocker::class, 'AdminBlockedIps'])->name('AdminBlockedIps');
 
+        //Route::post('/new', [IpBlocker::class, 'AdminPostNew'])->name('AdminPostNew');
+
+        //Route::get('/edit/{restriction}', [IpBlocker::class, 'AdminEditRestriction'])->name('AdminEditRestriction');
+        //Route::post('/edit/{restriction}', [IpBlocker::class, 'AdminEditRestrictionPost'])->name('AdminEditRestrictionPost');
+
+        //Route::get('/delete/{restriction}', [IpBlocker::class, 'AdminDeleteRestriction'])->name('AdminDeleteRestriction');
+    });
 });
 
 require __DIR__.'/auth.php';
