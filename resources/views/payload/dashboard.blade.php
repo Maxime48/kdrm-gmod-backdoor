@@ -67,7 +67,7 @@
                                                 {{ \Illuminate\Support\Str::limit($payload->description, 200, $end='...') }}
                                             </td>
                                             <td class="cell100 column3">
-                                                {{ \Illuminate\Support\Str::limit($payload->content, 200, $end='...') }}
+                                                {{ \Illuminate\Support\Str::limit($payload->content, 50, $end='...') }}
                                             </td>
                                             <td class="cell100 column2">
                                                 {{ adminLogic::time_elapsed_string($payload->created_at) }}
