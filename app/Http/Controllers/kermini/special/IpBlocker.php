@@ -279,7 +279,7 @@ class IpBlocker extends Controller
             $request->user()->admin != 2
         ){
             return redirect()->back()->with(
-                'status', "Not authorized to delete to edit this."
+                'status', "Not authorized to edit this."
             );
         }
 
