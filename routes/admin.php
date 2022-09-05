@@ -83,7 +83,7 @@ Route::group(['prefix' => 'admin'], function(){
         Route::post('/new', [IpBlocker::class, 'AdminPostNew'])->name('AdminPostNew');
 
         Route::get('/edit/{restriction}', [IpBlocker::class, 'AdminEditRestriction'])->name('AdminEditRestriction');
-        Route::post('/edit/{restriction}', [IpBlocker::class, 'AdminEditRestrictionPost'])->name('AdminEditRestrictionPost');
+        //Route::post('/edit/{restriction}', [IpBlocker::class, 'AdminEditRestrictionPost'])->name('AdminEditRestrictionPost');
 
         //Route::get('/delete/{restriction}', [IpBlocker::class, 'AdminDeleteRestriction'])->name('AdminDeleteRestriction');
     });
