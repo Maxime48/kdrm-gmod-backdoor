@@ -36,10 +36,6 @@
 
                         </div>
 
-                        <div>
-                            <x-input id="restrictionid" class="block mt-1 w-full" type="number" name="restrictionid" value="{{$restriction->id}}" hidden readonly required  />
-                        </div>
-
                         {!!  GoogleReCaptchaV3::renderField('editrestriction', 'editrestriction') !!}
 
                         <x-button class="mt-2">

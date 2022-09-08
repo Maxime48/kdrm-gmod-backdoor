@@ -271,6 +271,13 @@ class IpBlocker extends Controller
         return redirect()->route('AdminBlockedIps');
     }
 
+    /**
+     * Displays the admins edit page for ip restrictions
+     *
+     * @param $restriction
+     * @param Request $request
+     * @return view
+     */
     public function AdminEditRestriction($restriction, Request $request){
         $restriction = IpBan_Servers::where('id', $restriction);
 
@@ -287,5 +294,70 @@ class IpBlocker extends Controller
         return view('admin.ipblck.editrestriction', compact(
             'restriction'
         ));
+    }
+
+    /**
+     * Handles the new data for an ip restriction
+     *
+     * @param $restriction
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function AdminEditRestrictionPost($restriction, Request $request){
+        $customMessages = [
+            'required' => ':attribute is required.'
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'ip' => new ipv4_range,
+            'g-recaptcha-response' => [new GoogleReCaptchaV3ValidationRule('editrestriction')]
+        ],$customMessages);
+        if ($validator->fails()) {
+            return redirect()->back()->with(
+                'status', 'Query invalid'
+            )->withErrors($validator);
+        }else {
+            $restriction = IpBan_Servers::where('id', $restriction);
+
+            if(
+                $restriction->count() == 0 or
+                $request->user()->admin != 2
+            ){
+                return redirect()->back()->with(
+                    'status', "Not authorized to edit this."
+                );
+            }
+
+            $restriction = $restriction->first();
+            $restriction->forbiddenIp = $request->ip;
+            $restriction->update();
+            $restriction->touch();
+
+            return redirect()->route('AdminBlockedIps');
+        }
+    }
+
+    /**
+     * Deletes the select ip restriction
+     *
+     * @param $restriction
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function AdminDeleteRestriction($restriction, Request $request){
+        $restriction = IpBan_Servers::where('id', $restriction);
+
+        if(
+            $restriction->count() == 0 or
+            $request->user()->admin != 2
+        ){
+            return redirect()->back()->with(
+                'status', "Not authorized to edit this."
+            );
+        }
+
+        $restriction->first()->delete();
+
+        return redirect()->route('AdminBlockedIps');
     }
 }
