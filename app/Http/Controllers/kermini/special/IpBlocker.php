@@ -276,7 +276,7 @@ class IpBlocker extends Controller
      *
      * @param $restriction
      * @param Request $request
-     * @return view
+     * @return Application|Factory|View|RedirectResponse
      */
     public function AdminEditRestriction($restriction, Request $request){
         $restriction = IpBan_Servers::where('id', $restriction);
@@ -360,4 +360,5 @@ class IpBlocker extends Controller
 
         return redirect()->route('AdminBlockedIps');
     }
+
 }

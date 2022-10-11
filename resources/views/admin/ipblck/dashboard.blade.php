@@ -91,7 +91,7 @@
                                             </td>
                                             <td class="cell100 column3">
                                                 <a href="{{ route('AdminEditRestriction', ['restriction' => $restriction->id]) }}"  class="btn btn-secondary">Edit</a>
-                                                <a href="{{ route('UserDeleteRestriction', ['restriction' => $restriction->id]) }}"  class="btn btn-danger">
+                                                <a href="{{ route('AdminDeleteRestriction', ['restriction' => $restriction->id]) }}"  class="btn btn-danger">
                                                     Delete
                                                 </a>
                                             </td>
