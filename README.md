@@ -3,7 +3,7 @@ This is purelly made to continue Kermini (the predessessor) and represents what 
 
 The name was initially purelly made to confuse people with the real panel's purpose and the "K" just stands for kermini.
 
-Contribution to this project is welcome but this is not concidered as an active project
+Contribution to this project is welcome but this is not concidered as an active project and a major bugs renderers the lasts version unusable for some reason (starting the route split in admin.php and web.php)
 
 The major features include:
 ✅ 🕸️ Account System
