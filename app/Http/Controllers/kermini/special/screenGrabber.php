@@ -36,7 +36,7 @@ class screenGrabber extends Controller
      * @param Request $request
      * @return Application|Factory|View|RedirectResponse
      */
-    public function getSelectionMenu($serverid=null, Request $request){
+    public function getSelectionMenu(Request $request, $serverid=null){
         //no serverid verification because php is broken in that fcking specific place
 
         $server = servers::where('id', $serverid);

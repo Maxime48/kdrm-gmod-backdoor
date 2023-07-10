@@ -35,7 +35,7 @@ class imagesController extends Controller
      * @param Request $request
      * @return Application|Factory|View|RedirectResponse
      */
-    public function showImages($pageid=NULL, Request $request){
+    public function showImages(Request $request, $pageid=null){
 
         if(
             $pageid!=null

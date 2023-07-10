@@ -43,7 +43,7 @@ class userLogic extends Controller
      * @param $pageid page's number
      * @return Application|Factory|View|RedirectResponse
      */
-    public function dashboard($pageid=null, Request $request)
+    public function dashboard(Request $request, $pageid=null)
     {
 
         if(
@@ -334,7 +334,7 @@ class userLogic extends Controller
      * @param Request $request
      * @return Application|Factory|View|RedirectResponse
      */
-    public function userPayloads($pageid=null, Request $request){
+    public function userPayloads(Request $request, $pageid=null){
 
        if(
             $pageid!=null
@@ -668,7 +668,7 @@ class userLogic extends Controller
      * @param Request $request
      * @return Application|Factory|View|RedirectResponse
      */
-    public function GlobalPayloads($pageid=null, Request $request){
+    public function GlobalPayloads(Request $request, $pageid=null){
         if(
             $pageid!=null
             and !is_numeric($pageid)

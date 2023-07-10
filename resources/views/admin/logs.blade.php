@@ -87,9 +87,13 @@
                                                 {{ adminLogic::time_elapsed_string($log->created_at) }}
                                             </td>
                                             <td class="cell100 column4">
-                                                <a style="text-decoration: none;" href="{{ route('showUserProfile', ['id' => $log->user_id]) }}" >
-                                                    {{ adminLogic::getUserById($log->user_id)->name }}
-                                                </a>
+                                                @if( $log->user_id!= null)
+                                                    <a style="text-decoration: none;" href="{{ route('showUserProfile', ['id' => $log->user_id]) }}" >
+                                                        {{ adminLogic::getUserById($log->user_id)->name }}
+                                                    </a>
+                                                @else
+                                                    No user related to this log
+                                                @endif
                                             </td>
                                             <td class="cell100 column5">
                                                 @if( $log->server != "none" )

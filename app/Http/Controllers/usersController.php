@@ -22,7 +22,7 @@ class usersController extends Controller
      * @param Request $request
      * @return Application|Factory|View
      */
-    public function all($id=1, Request $request)
+    public function all(Request $request, $id=1)
     {
         $id2 = $id;
         $id = intval($id);

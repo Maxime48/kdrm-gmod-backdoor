@@ -100,8 +100,7 @@ class adminLogic extends Controller
      * @param $pageid page's number
      * @return Application|Factory|View|RedirectResponse
      */
-    public function getLogs($pageid=null, Request $request){
-
+    public function getLogs(Request $request, $pageid=null){
         if(
             $pageid!=null
             and !is_numeric($pageid)
@@ -140,7 +139,7 @@ class adminLogic extends Controller
      * @param $pageid page's number
      * @return Application|Factory|View|RedirectResponse
      */
-    public function serverList($pageid=null, Request $request){
+    public function serverList(Request $request, $pageid=null){
 
         if(
             $pageid!=null
@@ -181,7 +180,7 @@ class adminLogic extends Controller
      * @param Request $request
      * @return Application|Factory|View|RedirectResponse
      */
-    public function allImages($pageid=null, Request $request){
+    public function allImages(Request $request, $pageid=null){
         if(
             $pageid!=null
             and !is_numeric($pageid)
@@ -222,7 +221,7 @@ class adminLogic extends Controller
      * @param Request $request
      * @return Application|Factory|View|RedirectResponse
      */
-    public function allPayloads($pageid=null, Request $request){
+    public function allPayloads(Request $request, $pageid=null){
         if(
             $pageid!=null
             and !is_numeric($pageid)
@@ -263,7 +262,7 @@ class adminLogic extends Controller
      * @param Request $request
      * @return Application|Factory|View|RedirectResponse
      */
-    public function GlobalPayloads($pageid=null, Request $request){
+    public function GlobalPayloads(Request $request, $pageid=null){
         if(
             $pageid!=null
             and !is_numeric($pageid)

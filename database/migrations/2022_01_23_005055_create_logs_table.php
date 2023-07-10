@@ -19,7 +19,7 @@ class CreateLogsTable extends Migration
             $table->enum('level', ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug']);
             $table->text('message')->nullable();
             $table->text('server')->default("none");
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->nullable()->constrained();
         });
     }
 

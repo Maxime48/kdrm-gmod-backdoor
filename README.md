@@ -1,4 +1,4 @@
-KDRM is a backdoor P.O.C panel for Garry's Mod it should never be used on a actual production system and still contains important bugs that makes some features unusable.
+KDRM is a backdoor P.O.C panel for Garry's Mod it should never be used on a actual production system and is purely made for educational purposes.
 This is purely made to continue Kermini (the predecessor) and represents what a modern backdoor panel would have been capable of.
 
 The name was initially purely made to confuse people with the real panel's purpose, and the "K" just stands for kermini.

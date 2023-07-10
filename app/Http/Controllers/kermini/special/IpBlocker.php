@@ -26,7 +26,7 @@ class IpBlocker extends Controller
      * @param Request $request
      * @return Application|Factory|View|RedirectResponse
      */
-    public function UserBlockedIps($pageid=NULL, Request $request){
+    public function UserBlockedIps(Request $request, $pageid=null){
         if(
             $pageid!=null
             and !is_numeric($pageid)
@@ -196,7 +196,7 @@ class IpBlocker extends Controller
      * @param Request $request
      * @return Application|Factory|View|RedirectResponse
      */
-    public function AdminBlockedIps($pageid=NULL, Request $request){
+    public function AdminBlockedIps(Request $request, $pageid=null){
         if(
             $pageid!=null
             and !is_numeric($pageid)
