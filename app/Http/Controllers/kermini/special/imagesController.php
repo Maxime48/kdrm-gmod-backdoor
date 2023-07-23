@@ -217,7 +217,7 @@ class imagesController extends Controller
                 $img = new images;
                 $img->referencePath = $filePath . $fileName;
                 $img->fileName = $fileName;
-                $img->fileSize = getimagesize($image);
+                $img->fileSize = Storage::size($filePath.$fileName);
                 $img->user_id = $requestSCRGB->first()->user_id; //ratio bozo
 
                 $img->save();
