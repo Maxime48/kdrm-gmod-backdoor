@@ -4,39 +4,95 @@ namespace App\Http\Middleware;
 
 use App\Models\IpBan_Servers;
 use App\Models\Logs;
+use App\Models\PSCRGRB_player_requests;
+use App\Models\Scrgb_Image_Requests;
+use App\Models\servers;
+use App\Models\User;
 use Closure;
+use DateTime;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
-class CheckIpForGlobalRestriction
+class CheckIpForUserMadeRestrictions
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @return \Illuminate\Http\JsonResponse
+     * @param  \Closure  $next
+     * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
-        $user = $request->user();
-        $ip = $request->ip();
+        $user = null;
 
-        $bannedIps = IpBan_Servers::where('global', true)->pluck('forbiddenIp');
+        //possible parameters:
+        // $key in parameter
+        // $rkey in parameter
+        // $imagekey in parameter
 
-        foreach ($bannedIps as $bannedIp) {
-            if ($this->ipMatchesPattern($ip, $bannedIp)) {
-                // Generate a unique mocking message for the blocked user
-                $message = $this->generateMockingMessage($ip);
+        //usages of those parameters:
+        // $key: infection key in User model and Scrgb_Image_Requests::where('SCRGBimageKey', $key)
+        // $rkey: PSCRGRB_player_requests::where('PlayerRequestKey',$rkey)
+        // $imagekey: Scrgb_Image_Requests::where('SCRGBimageKey', $imagekey)
 
-                $log = new Logs();
-                $log->level = 'notice';
-                $log->message = ($user->name ?? "Unknown user") . ' was blocked ('.$ip.') via global IP ban.';
-                $log->user_id = $user->id ?? null;
-                $log->save();
 
-                // Return a response with the mocking message
-                return response()->json(['error' => $message], 403);
+
+        if ($request->has('key')) {
+            // Identify user based on the infection key sent as a parameter
+            $infectionKey = $request->input('key');
+            $user = User::where('infectionKey', $infectionKey)->first();
+
+            if(!$user){
+                $imageRequest = Scrgb_Image_Requests::where('SCRGBimageKey', $infectionKey)->first();
+                if($imageRequest){
+                    $user = User::where('id', $imageRequest->user_id)->first();
+                }
+            }
+
+        } elseif ($request->has('imagekey')) {
+            // Identify user based on the image key sent as a parameter in Scrgb_Image_Requests
+
+            $imageKey = $request->input('imagekey');
+            $imageRequest = Scrgb_Image_Requests::where('SCRGBimageKey', $imageKey)->first();
+            if ($imageRequest) {
+                $user = User::where('id', $imageRequest->user_id)->first();
+            }
+
+        } elseif ($request->has('rkey')) {
+            // Identify user based on the player request key sent as a parameter in PSCRGRB_player_requests
+            $playerRequestKey = $request->input('rkey');
+            $playerRequest = PSCRGRB_player_requests::where('PlayerRequestKey', $playerRequestKey)->first();
+            if ($playerRequest) {
+                $server = servers::where('id', $playerRequest->server_id)->first();
+                if ($server) {
+                    $user = User::where('id', $server->user_id)->first();
+                }
+            }
+        }
+
+        if ($user) {
+            // Retrieve the server's or game client IP address
+            $serverIp = $request->ip();
+
+            // Retrieve the banned IPs associated with the user that are not global
+            $bannedIps = IpBan_Servers::where('user_id', $user->id)
+                ->where('global', false)
+                ->pluck('forbiddenIp');
+
+            foreach ($bannedIps as $bannedIp) {
+                if ($this->ipMatchesPattern($serverIp, $bannedIp)) {
+                    // Generate a unique mocking message for the blocked user
+                    $message = $this->generateMockingMessage($serverIp);
+
+                    $log = new Logs();
+                    $log->level = 'notice';
+                    $log->message = 'User-specific IP ban triggered for IP ' . $serverIp . ' with path ' . $request->path();
+                    $log->user_id = $user->id;
+                    $log->save();
+
+                    // Return a response with the mocking message
+                    return response()->json(['error' => $message], 403);
+                }
             }
         }
 
@@ -97,5 +153,4 @@ class CheckIpForGlobalRestriction
 
         return $messages[array_rand($messages)];
     }
-
 }
