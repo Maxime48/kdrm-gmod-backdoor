@@ -27,7 +27,7 @@ class screenGrabber extends Controller
     /**
      * @var bool Status of the devlopment system for a local server
      */
-    public static $debug = true;
+    public static $debug = false;
 
     /**
      * Handles the request for the Screen Grabber selection menu
